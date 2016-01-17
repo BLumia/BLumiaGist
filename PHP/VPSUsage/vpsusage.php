@@ -41,6 +41,10 @@
 	}
 	$request = "https://api.kiwivm.it7.net/v1/getServiceInfo?veid={$VEID}&api_key={$API_KEY}";
 	$serviceInfo = json_decode (file_get_contents ($request));
+	if ($serviceInfo == NULL) {
+		echo "API temporary not avaliable.";
+		exit(0);
+	}
 	//var_dump($serviceInfo);
 	$BandwidthUsedGB = $serviceInfo->data_counter / 1024 / 1024 / 1024;
 	$BandwidthTotalGB = $serviceInfo->plan_monthly_data / 1024 / 1024 / 1024;
@@ -60,10 +64,6 @@
 			$displayRLS = true;
 			$request = "https://api.kiwivm.it7.net/v1/getRateLimitStatus?veid={$VEID}&api_key={$API_KEY}";
 			$rateLimitStatusInfo = json_decode (file_get_contents ($request));
-			if ($rateLimitStatusInfo == NULL) {
-				echo "API temporary not avaliable.";
-				exit(0);
-			}
 			$leftReqIn15Min = $rateLimitStatusInfo->remaining_points_15min;
 			$leftReqIn24Hours = $rateLimitStatusInfo->remaining_points_24h;
 		} else {
