@@ -1,0 +1,21 @@
+body {
+    background-color: #FFFFFF;
+    background-image: url("../image/background.jpg");
+}
+
+.container {
+/* can NOT modify width */  
+    background-color: #FFFFFF;
+}
+
+.reply-info {
+/* #10 15/04/21 21:16:00 [delete] */
+	position:absolute;
+	bottom:0px;
+	right:15px;
+}
+
+.reply-content {
+	position:relative;
+	min-height:100px;
+}

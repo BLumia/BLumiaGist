@@ -1,0 +1,14 @@
+﻿/* Up 2 Top */
+.up{
+	width:54px;
+	height:54px;
+	background:url(../image/topback.gif) no-repeat 0 0;
+	filter:alpha(Opacity=60);
+	-moz-opacity:0.6;
+	opacity: 0.6;
+}
+.up:hover{
+	filter:alpha(Opacity=100);
+	-moz-opacity:1;
+	opacity:1;
+}
