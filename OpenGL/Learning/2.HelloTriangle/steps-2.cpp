@@ -1,14 +1,5 @@
 //g++ test.cpp -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -std=c++11 -o run 
 
-/*
- * QA
- * Q: VAO存储什么，其作用是什么
- * A: 大概就是VBO里存了一坨数据 然后VAO告诉GL如何解释这坨数据以及如何传给vertex shader
- * Q: Vertex Attrib存储在VAO中吗？为什么？
- * A: 是，VAO就是存储Vertex Attrib的
- * 
-*/
-
 #include <iostream>
 //GLEW
 #define GLEW_STATIC
@@ -70,18 +61,26 @@ int main()
 	// Prepare Stuff
 	// Triangle Points
 	GLfloat vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		0.5f, 0.5f, 0.0f,   // 右上角
+		0.5f, -0.5f, 0.0f,  // 右下角
+		-0.5f, -0.5f, 0.0f, // 左下角
+		-0.5f, 0.5f, 0.0f   // 左上角
 	};
-	// VBO n VAO
-	GLuint VBO, VAO;
+	GLuint indices[] = { // 起始于0!
+		0, 1, 3, // 第一个三角形
+		1, 2, 3  // 第二个三角形
+	};
+	// VBO, VAO n EBO
+	GLuint VBO, VAO, EBO;
 	glGenBuffers(1, &VBO); // gen one buffer
+	glGenBuffers(1, &EBO); // gen one buffer
 	glGenVertexArrays(1, &VAO); // gen one vertex array(what's that)
 	// Bind VAO
 	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); // what's GL_ARRAY_BUFFER..
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // data form VBO to memory
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); // data form VBO to memory
 	// Vertex Attrib
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0); // What's that argument
@@ -134,13 +133,16 @@ int main()
 		//Use Shader Program
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO); // Bind VAO
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0); // Unbind VAO
 		
 		glfwSwapBuffers(window);
 	}
+	
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 	// Free GLFW Memory
 	glfwTerminate();
 

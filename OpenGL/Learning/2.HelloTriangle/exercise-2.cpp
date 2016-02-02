@@ -1,11 +1,7 @@
 //g++ test.cpp -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -std=c++11 -o run 
 
 /*
- * QA
- * Q: VAO存储什么，其作用是什么
- * A: 大概就是VBO里存了一坨数据 然后VAO告诉GL如何解释这坨数据以及如何传给vertex shader
- * Q: Vertex Attrib存储在VAO中吗？为什么？
- * A: 是，VAO就是存储Vertex Attrib的
+ * 用不同的VAO(和VBO)创建同样的2个三角形，每个三角形的数据要不同(创建2个顶点数据数组，而不是1个)
  * 
 */
 
@@ -70,21 +66,35 @@ int main()
 	// Prepare Stuff
 	// Triangle Points
 	GLfloat vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, //LD
+		 0.5f, -0.5f, 0.0f, //RD
+		-0.5f,  0.5f, 0.0f, //LU
+	};
+	GLfloat vertices2[] = {
+		-0.5f,  0.5f, 0.0f, //LU
+		 0.5f, -0.5f, 0.0f, //RD
+		 0.5f,  0.5f, 0.0f  //RU
 	};
 	// VBO n VAO
-	GLuint VBO, VAO;
-	glGenBuffers(1, &VBO); // gen one buffer
-	glGenVertexArrays(1, &VAO); // gen one vertex array(what's that)
+	GLuint VBO[2], VAO[2];
+	glGenBuffers(2, VBO); // gen one buffer
+	glGenVertexArrays(2, VAO); // gen one vertex array(what's that)
 	// Bind VAO
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); // what's GL_ARRAY_BUFFER..
+	glBindVertexArray(VAO[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]); // what's GL_ARRAY_BUFFER..
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // data form VBO to memory
 	// Vertex Attrib
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0); // What's that argument
+	glEnableVertexAttribArray(0); 
+	// Unbind VAO
+	glBindVertexArray(0);
+	// Bind VAO
+	glBindVertexArray(VAO[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]); // what's GL_ARRAY_BUFFER..
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW); // data form VBO to memory
+	// Vertex Attrib
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0); 
 	// Unbind VAO
 	glBindVertexArray(0);
 	// Shader
@@ -133,14 +143,17 @@ int main()
 		
 		//Use Shader Program
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO); // Bind VAO
+		glBindVertexArray(VAO[0]); // Bind VAO
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0); // Unbind VAO
+		glBindVertexArray(VAO[1]); // Bind VAO
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0); // Unbind VAO
 		
 		glfwSwapBuffers(window);
 	}
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(2, VAO);
+	glDeleteBuffers(2, VBO);
 	// Free GLFW Memory
 	glfwTerminate();
 

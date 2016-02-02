@@ -1,11 +1,7 @@
 //g++ test.cpp -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -std=c++11 -o run 
 
 /*
- * QA
- * Q: VAO存储什么，其作用是什么
- * A: 大概就是VBO里存了一坨数据 然后VAO告诉GL如何解释这坨数据以及如何传给vertex shader
- * Q: Vertex Attrib存储在VAO中吗？为什么？
- * A: 是，VAO就是存储Vertex Attrib的
+ * 尝试使用glDrawArrays以在数据中添加更多顶点的方式，绘制两个彼此相连的三角形
  * 
 */
 
@@ -70,9 +66,13 @@ int main()
 	// Prepare Stuff
 	// Triangle Points
 	GLfloat vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, //LD
+		 0.5f, -0.5f, 0.0f, //RD
+		-0.5f,  0.5f, 0.0f, //LU
+		
+		-0.5f,  0.5f, 0.0f, //LU
+		 0.5f, -0.5f, 0.0f, //RD
+		 0.5f,  0.5f, 0.0f  //RU
 	};
 	// VBO n VAO
 	GLuint VBO, VAO;
@@ -134,7 +134,7 @@ int main()
 		//Use Shader Program
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO); // Bind VAO
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0); // Unbind VAO
 		
 		glfwSwapBuffers(window);
