@@ -2,7 +2,7 @@
 
 ## 编写时环境
 
-在Debian下，以c++编写，使用GLFW，GLEW库
+在Debian下，以c++编写，使用GLFW，GLEW库, SOIL库（第四节起）
 均显式的标明为Core-profile并避免使用弃用的函数
 
 ## 参考的内容
