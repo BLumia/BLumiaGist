@@ -171,6 +171,8 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		
+		lightPos = glm::vec3(1.0f * sin((GLfloat)glfwGetTime()), 1.0f, 1.0f * cos((GLfloat)glfwGetTime()));
+		
 		// it will cause problem if we don't draw anything on linux, so we set a clear color here.
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // State Setting func
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

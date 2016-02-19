@@ -1,7 +1,8 @@
 //g++ test.cpp -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -std=c++11 -o run 
 
 /*
- * 
+ * Do Phong shading in view space instead of world space
+ * 目前理解上有些问题，参考了参考答案
 */
 
 #include <iostream>
