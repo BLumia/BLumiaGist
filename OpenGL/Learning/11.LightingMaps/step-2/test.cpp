@@ -1,7 +1,7 @@
 //g++ test.cpp -lSOIL -lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -std=c++11 -o run 
 
 /*
- * 尚有错误的代码，存在玄学bug
+ * 感谢大黄蜂(wtf)解决了玄学问题
 */
 
 #include <iostream>
@@ -264,7 +264,7 @@ int main()
 		
 		glBindVertexArray(VAO); // Bind VAO-----------------
 		
-		printf("%d",glGetError());
+		//printf("%d",glGetError());
 		model = glm::translate(model, cubePosition);
 		modelLoc = glGetUniformLocation(ourShader.Program, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
