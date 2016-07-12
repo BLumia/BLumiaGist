@@ -1,5 +1,6 @@
 # Dolphin Folder Configure File
 .directory
+.idea
 
 # OpenGL Learning exec binary
 run
