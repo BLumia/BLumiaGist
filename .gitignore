@@ -4,3 +4,6 @@
 
 # OpenGL Learning exec binary
 run
+
+#Windows Binary
+*.exe
