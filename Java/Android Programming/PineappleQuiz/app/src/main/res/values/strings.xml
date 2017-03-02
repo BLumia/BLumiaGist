@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">PineappleQuiz</string>
+    <string name="action_settings">Settings</string>
+    <string name="question_one">董先生连任吼不吼哇？</string>
+    <string name="question_two">中央也兹磁他吗？</string>
+    <string name="question_three">会不会给人一种硬点的感觉？</string>
+    <string name="question_four">那连任呢？</string>
+    <string name="true_button">吼哇</string>
+    <string name="false_button">有偏差</string>
+    <string name="correct_toast">兹磁</string>
+    <string name="incorrect_toast">没有任何这个意思!</string>
+    <string name="next_button">下一秒</string>
+    <string name="warning_text">让身经百战的长者告诉你人生经验?</string>
+    <string name="show_answer_button">谈笑风生</string>
+    <string name="cheat_button">学习一个!</string>
+    <string name="judgment_toast">作弊不吼.</string>
+    <string name="title_activity_cheat">学习一个</string>
+</resources>

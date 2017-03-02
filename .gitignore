@@ -5,5 +5,20 @@
 # OpenGL Learning exec binary
 run
 
-#Windows Binary
+# Binary
 *.exe
+*.apk
+*.ap_
+
+# Lava class and dex
+*.dex
+*.class
+
+# Gradle and Build
+*/build/
+
+# Configure files that should not be in VCS
+local.properties
+
+# IDE Misc
+*.iml
