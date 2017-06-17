@@ -1,0 +1,10 @@
+# Basic Simple Makefile, for a SFML test
+CC= g++
+CXXFLAGS= -lsfml-graphics -lsfml-window -lsfml-system
+INCLUDE_FOLDER= -I./thirdparty/SFML-2.4.2/include
+LINK_FOLDER= -L./thirdparty/SFML-2.4.2/lib
+
+all: test.exe
+	@echo "DONE"
+test.exe:
+	$(CC) src/test.cpp -o bin/$@ $(CXXFLAGS) $(INCLUDE_FOLDER) $(LINK_FOLDER)
