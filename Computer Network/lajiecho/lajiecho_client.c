@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <readline/readline.h>
 #include "socketwrapper.h"
 
@@ -89,7 +91,6 @@ int main(int argc, char** argv) {
 		connect(socketfd, (SA*) &srvaddr, sizeof(srvaddr));
 		str_cli(stdin, socketfd);
 	} else {
-		bind(socketfd, (SA*) &srvaddr, sizeof(srvaddr));
 		dg_cli(stdin, socketfd, (SA*) &srvaddr, sizeof(srvaddr));
 	}
 
