@@ -27,7 +27,7 @@
 
     function emoji_replacement_init() {
         replaceRuleJson.forEach(function(el) {
-            replaceRuleMap[':' + el.name + ':'] = "<img draggable='false' class='emoji' alt='" + el.name + "' src='https://cdn.discordapp.com/emojis/" + el.id + ".png'>";
+            replaceRuleMap[':' + el.name + ':'] = "<img draggable='false' class='emoji jumboable' alt='" + el.name + "' src='https://cdn.discordapp.com/emojis/" + el.id + ".png'>";
         });
 
         window.setInterval(emoji_replacement_update, 1000);
