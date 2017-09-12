@@ -193,4 +193,28 @@ Maven 全局配置文件在 `{M2_HOME}/conf/settings.xml`，对于用户，可�
 
 #### 使用镜像
 
+Maven 会根据配置文件中 `<mirrors>` 节点下的 `<mirror>` 节点来匹配镜像，匹配方法是拿 repository 的 id 和 `mirrorOf` 的规则进行匹配，匹配成功后使用该 `<mirror>` 指定的镜像，不再继续尝试匹配。
+
+```xml
+<!-- 以下示例均来自 https://maven.apache.org/guides/mini/guide-mirror-settings.html -->
+<settings>
+  ...
+  <mirrors>
+    <mirror>
+      <id>UK</id>
+      <name>UK Central</name>
+      <url>http://uk.maven.org/maven2</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+  </mirrors>
+  ...
+</settings>
+```
+
+上面示例将应用到所有 id 为 central 的 **repository** 。 central 表示中央仓库。
+
+`mirrorOf` 可以使用逗号分割多个 repository 名称（或规则），比如  `repo1,repo2` 。规则也可以为 `*` ，这将匹配所有 repository 的 id，即导致获取所有 repository 时都会使用该 mirror 。对于 `*,!repo1` 这个示例，将会匹配除了 repo1 外的所有 repository 使用该规则。
+
+mirror 节点的 id 是干嘛的我还真没搞清楚
+
 profiles.. todo: [ref](https://maven.apache.org/guides/mini/guide-configuring-maven.html) 
