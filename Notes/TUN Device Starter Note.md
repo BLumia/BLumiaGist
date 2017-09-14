@@ -23,7 +23,7 @@ sudo route add 123.123.123.123 dummytun # 把 123.123.123.123 路由到 dummytun
 ip route get 123.123.123.123 # 试试看是否搞成了
 ```
 
-如上并没有给这个 tun 设备 IP ，会有默认的一个 IPv6 地址，当然也可以给它一个 IP ：
+如上并没有给这个 tun 设备 IP （但 `ioctl()` 打开这个 tun 设备后就会有一个 IPv6 地址了），当然也可以给它一个 IP ：
 
 ``` shell
 sudo ip addr add 172.0.0.0/24 dev dummytun
