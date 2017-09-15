@@ -12,6 +12,8 @@ lsmod | grep tun # 也可以这样检查
 
 为了方便，我选择重启... 
 
+PS. 据说在 ubuntu 下只需 `/sbin/modprobe tun` 就可以正常使用 tun 设备了，不过我手头没有办法测试，供参考。
+
 ### 简易测试
 
 建立一个 tun 设备，然后设置路由表把数据包路由到 tun 设备里。
@@ -35,6 +37,8 @@ sudo ip addr add 172.0.0.0/24 dev dummytun
 // 此处省略了 tun_open() 的原型。
 // 作用仅仅是 `open()` 该设备，`ioctl()` 连接到该设备最终返回文件描述符
 int fd = tun_open("dummytun");
+// 我们假设是按照刚刚的步骤，在运行程序之前就已经创建并 `up` 了设备 dummytun
+// 如果你希望通过代码创建 tun 设备，别忘了把创建的设备 `up` 起来
 printf("Device dummytun opened\n");
 
 while(1) {
@@ -43,7 +47,7 @@ while(1) {
 }
 ```
 
-额外需要注意的事是，在写过路由表规则以及给设备绑 IP 之后，最好还是刷一下缓存比较好，以免出现测了半天才发现压根没经过自己的 tun 设备的情况。
+另外额外需要注意的事是，在写过路由表规则以及给设备绑 IP 之后，最好还是刷一下缓存比较好，以免出现测了半天才发现压根没经过自己的 tun 设备的情况。
 
 ``` shell
 sudo ip route flush cache
