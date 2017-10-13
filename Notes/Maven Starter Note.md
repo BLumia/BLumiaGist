@@ -33,6 +33,13 @@ mvn archetype:generate -B -DarchetypeGroupId=org.apache.maven.archetypes \
 
 如果单纯的使用 `mvn -B archetype:generate` 会提示缺少 `groupId`， `artifactId` 和 `package`。
 
+项目创建完毕后如需使用 IDEA 或者 eclipse ，只需：
+
+``` shell
+mvn idea:idea
+mvn eclipse:eclipse
+```
+
 ### POM 文件
 
 创建完毕后目录下会有 `pom.xml` ，该文件包含了 **项目对象模型（Project Object Model， POM）**，大概长这个样子：
