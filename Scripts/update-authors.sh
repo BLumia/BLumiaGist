@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# AUTHORS generate script
+# Modified form GitHub:nodejs/node, tools/update-authors.sh
+# Ref: https://github.com/nodejs/node/blob/master/tools/update-authors.sh
+
 git log --reverse --format='%aN <%aE>' | perl -we '
 
 BEGIN {
