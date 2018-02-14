@@ -160,7 +160,8 @@ function fauxTerm(config) {
 	"uname": uname,
 	"man": man,
 	"bigcry": bigcry,
-	"apropos": apropos
+	"apropos": apropos,
+	"touch": touch
   };
   
   var fauxInput = document.createElement('textarea');
@@ -229,7 +230,7 @@ function fauxTerm(config) {
 	var out = "";
 	for (var i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') out += "bash: cd: " + argv[i] + ": invalid option\n";
-		else if (argv[i] == "Document" || argv[i] == "NSFW" || argv[i] == "/") out += "bash: cd: " + argv[i] + ": Permission denied\n";
+		else if (argv[i] == "Document" || argv[i] == "NSFW" || argv[i] == "/" || argv[i] == "..") out += "bash: cd: " + argv[i] + ": Permission denied\n";
 		else if (argv[i] == "~" || argv[i] == "/root" || argv[i] == "/root/" || argv[i] == ".") out += "";
 		else out += "bash: cd: " + argv[i] + ": No such file or directory\n";
 		break;
@@ -253,6 +254,14 @@ function fauxTerm(config) {
 		for(var i = 0; i < Number(argv[1]); i++) out+="<img src='./bigcry.jpg'/>";
 	}
 	return out+"\n";
+  }
+  
+  function touch(argv, argc) {
+    var out = "touch: missing file operand\n";
+	if (argc == 2) {
+		out = "touch: cannot touch '"+ argv[1] +"': Read only filesystem\n";
+	}
+	return out;
   }
   
   function man(argv, argc) {
