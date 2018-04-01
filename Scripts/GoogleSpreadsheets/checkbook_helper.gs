@@ -12,11 +12,11 @@ function setDebtColor() {
     var cell = range.getCell(i, 3);
     var cellValue = cell.getValue();
     if (cellValue - 0 > 0.001) { // incoming
-      if (cellValue > 61) cell.setBackground("#a0c238");
+      if (cellValue > 61 && cellValue <= 261) cell.setBackground("#a0c238");
       else if (cellValue > 261) cell.setBackground("#0074bf"); 
       else cell.setBackground("#c4fdb3");
     } else if (cellValue - 0 < 0.001) { // outcoming
-      if (cellValue < -61) cell.setBackground("#de9610");
+      if (cellValue < -61 && cellValue >= -261) cell.setBackground("#de9610");
       else if (cellValue < -261) cell.setBackground("#c93a40"); 
       else cell.setBackground("#fffacd");
     } else {
