@@ -15,7 +15,7 @@ function setDebtColor() {
       if (cellValue > 61 && cellValue <= 261) cell.setBackground("#a0c238");
       else if (cellValue > 261) cell.setBackground("#0074bf"); 
       else cell.setBackground("#c4fdb3");
-    } else if (cellValue - 0 < 0.001) { // outcoming
+    } else if (cellValue - 0 < -0.001) { // outcoming
       if (cellValue < -61 && cellValue >= -261) cell.setBackground("#de9610");
       else if (cellValue < -261) cell.setBackground("#c93a40"); 
       else cell.setBackground("#fffacd");
