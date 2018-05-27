@@ -41,7 +41,7 @@ rand = "0.3.14"
 
 换句话说， `Cargo.toml` 是理论支持的版本，而 `Cargo.lock` 是记录了本地开发所使用的版本。不过目前我有个问题，明显 `.lock` 中记录的内容很可能和所用的操作系统相关（比如该例子中 `rand` 在 Windows 下会依赖 `winapi` 这个 crate ）。如果对于跨平台的应用，该文件是否应当被 git 跟踪？
 
-### 语法速览
+### 语法速览 - 猜猜看程序
 
 ``` rust
 // TRPL 的 猜猜看 示例 2-1
@@ -169,6 +169,58 @@ fn main() {
 
 `loop` 提供了一个无限循环。可以使用 `break` 跳出循环。
 
-已经知道了 Result 是一个枚举，故我们可以使用 match 来处理异常。最终 `let guess: u32 = ` 的右侧的值会是 `match` 所 match 的内容。（注：此处不太确定，比如实际上你可以写 `let guess: u32 = continue;` 并且不会报错，这很魔性...）
+已经知道了 Result 是一个枚举，故我们可以使用 match 来处理异常。最终 `let guess: u32 = ` 的右侧的值会是 `match` 所 match 的内容（一个表达式，关于表达式请见下面的描述）。
 
 以上涵盖了 Rust 的最基础的一些语法。
+
+### 语法速览 - 常规
+
+Rust 是静态类型语言，使用 let 声明变量。 Rust 可以进行类型推断，但无法推断时需要显式的声明类型。
+
+Rust 的 char 类型代表了一个 Unicode 标量值。
+
+Rust 的符合类型包含元组（tuple）和数组（array）。元组是一个将**多个**（没说三个）其他类型的值组合进一个复合类型的主要方式。数组中的每个元素的类型必须相同且数组是定长的。
+
+``` rust
+fn main() {
+    let tup = (500, 6.4, 1); // 相当于：let tup: (i32, f64, u8) = (500, 6.4, 1);
+    let (x, y, z) = tup; // 这叫做 解构（destructuring）
+    println!("The value of y is: {}", y);
+	let six_point_four = tup.1; // 可以使用点号后跟值的索引来直接访问
+	
+	let a = [1, 2, 3, 4, 5]; // 数组
+    let first = a[0];
+    let second = a[1];
+}
+```
+
+Rust 中函数的声明位置是无所谓的。有返回值的函数在一个箭头 `->` 后声明返回值的类型，函数的返回值等同于函数体最后一个表达式的值。
+
+``` rust
+fn main() {
+    another_function(5, 6);
+	let x = five();
+    println!("The value of x is: {}", x);
+}
+
+fn another_function(x: i32, y: i32) {
+    println!("The value of x is: {}", x);
+    println!("The value of y is: {}", y);
+}
+
+fn five() -> i32 {
+    5
+}
+```
+
+Rust 是个基于表达式的语言，函数调用是一个表达式。宏调用是一个表达式。创建新作用域的大括号（代码块）`{}` 也是一个表达式。函数和表达式都会返回值。如果一个 `{}` 内没有表达式而都是语句，那 `{}` 构成的表达式将返回一个空的元组（这什么设计..）
+
+``` rust
+fn main() {
+    let y = {
+        let x = 3;
+        x + 1 // 这里没有分号，如果在表达式的结尾加上分号，他就变成了语句，{} 这段返回的就是个空元组了。
+    };
+    println!("The value of y is: {}", y);
+}
+```
