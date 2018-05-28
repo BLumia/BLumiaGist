@@ -224,3 +224,43 @@ fn main() {
     println!("The value of y is: {}", y);
 }
 ```
+
+Rust 的 `if` 后面不用括号，但条件必须是 bool 类型，非 bool 类型的表达式不会被转换为 bool 类型。另， `if` 语句也是表达式。此外，`if` 若是多分支的，则各分支的返回值类型应当是相同的，
+
+Rust 的 `while` 循环条件同样不需要括号，但它不是表达式（不太确定，尝试得到的结果是会提示 expected type `()` ，当然也可以把结果（空元组）赋值给变量，然而...好像没什么卵用吧）。另外，使用 `while` 循环通过下标迭代数组会更慢，因为编译器增加了运行时代码来对每次循环的每个元素进行条件检查。
+
+``` rust
+fn main() {
+    let condition = true;
+    let number = if condition {
+        5
+    } else {
+        6
+		//"six"
+    };
+    println!("The value of number is: {}", number);
+	
+	let a = [10, 20, 30, 40, 50];
+    let mut index = 0;
+    while index < 5 {
+        println!("the value is: {}", a[index]);
+        index = index + 1;
+    }
+}
+```
+
+Rust 的 `for` 循环如下，提供一个 `Range` 供遍历。
+
+``` rust
+fn main() {
+    let a = [10, 20, 30, 40, 50];
+    for element in a.iter() {
+        println!("the value is: {}", element);
+    }
+	
+	for number in (1..4).rev() { // rev 反转一个 Range 里的东西
+        println!("{}!", number);
+    }
+    println!("LIFTOFF!!!");
+}
+```
