@@ -418,3 +418,41 @@ fn main() {
 `println!` 宏能处理很多类型的格式，`{}` 默认告诉 println! 使用被称为 `Display` 的格式，而结构体并没有提供一个默认的 `Display` 实现。加入 `:?` 指示符（使用 `{:?}`）告诉 println! 我们想要使用叫做 `Debug` 的输出格式。`Debug` 是一个 trait，允许我们在调试代码时以一种对开发者有帮助的方式打印出结构体。
 
 Rust 确实 包含了打印出调试信息的功能，不过我们必须为结构体显式选择这个功能。为此，在结构体定义之前加上 `#[derive(Debug)]` 注解。
+
+``` rust
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle { // Rectangle 的实现块
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+    
+    fn square(size: u32) -> Rectangle {
+        Rectangle { width: size, height: size }
+    }
+
+    fn can_hold(&self, other: &Rectangle) -> bool {
+        self.width > other.width && self.height > other.height
+    }
+}
+
+fn main() {
+    let rect = Rectangle {
+        width: 10,
+        height: 20
+    };
+    
+    let rect2 = Rectangle::square(5); // 使用关联函数
+    
+    println!("{} {}", rect.area(), rect.can_hold(&rect2)); // 使用方法
+}
+```
+
+不同于别的语言中的叫法，Rust 中称乎 位于结构体的上下文中被定义的~~成员函数~~ 为 **方法** （Method），而 位于结构体的上下文中被定义的~~静态函数~~ 则被称为**关联函数**（associated functions）。其中~~成员函数~~方法（的原型中）的第一个参数总是 `&self` ，表示调用该方法的结构体实例。而~~静态函数~~关联函数则不以 self 作为第一个参数，原因不说也知道了..
+
+有趣的事实：对于 C++ ，当调用指针对象的成员函数时，我们需要 `->` 来对指针进行解引用（`object->something() 就像 (*object).something()`），而 Rust 中有自动引用和解引用的功能，进行方法调用时， Rust 会自动增加 `&`、`&mut` 或 `*` 以便使符合方法的签名。
+
+调用方法通过点号即可，而调用关联函数则通过 `::` 进行。他们的声明被放在 `impl` 块中，而一个结构体也可以有多个 `impl` 块存在。
