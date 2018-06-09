@@ -338,4 +338,83 @@ fn main() {
 }
 ```
 
-Slice 是另一个没有所有权的数据类型，允许引用集合中一段连续的元素序列。Slice 的类型记法好像很奇怪，前面的 `&` 我目前理解为表示它不具所有权（是个引用），而 String 的 slice 类型叫 `&str` 不太清楚原因。对于其它类型的 Slice ，例如上面的，为 `&[i32]` 。
+Slice 是另一个 **没有所有权** 的数据类型，允许引用集合中一段连续的元素序列。Slice 的类型记法好像很奇怪，前面的 `&` 我目前理解为表示它不具所有权（是个引用），而 String 的 slice 类型叫 `&str` 不太清楚原因。对于其它类型的 Slice ，例如上面的，为 `&[i32]` 。
+
+``` rust
+#![allow(unused)]
+struct User { // 这是一个结构体，其内成员称为字段
+    username: String,
+    email: String, // 访问字段的指使用点号，user1.email
+    sign_in_count: u64,
+    active: bool,
+}
+
+fn main() {
+    let user1 = User { // 若需要可变，则应该使用 `let mut user1`
+        email: String::from("someone@example.com"),
+        username: String::from("someusername123"),
+        active: true,
+        sign_in_count: 1,
+    };
+    
+    let user2 = User {
+        email: String::from("another@example.com"),
+        username: String::from("anotherusername567"), // 试着注释掉这一行，那么在下一行，username的所有权就消失了
+        ..user1 // 结构体更新语法，表示其余值来自 user1 变量中实例的字段
+    };
+    
+    let user3 = build_user(user2.email, user2.username); // 前两个字段的所有权被拿走了！
+    
+    println!("Email {}", user3.email);
+    // println!("Email {}", user2.email); 所有权被拿走了！不能这么做
+    println!("Sign-in Count {}", user2.sign_in_count); // 但是这样可以
+}
+
+fn build_user(email: String, username: String) -> User { // 别忘了，这里传的不是引用，会拿走所有权
+    User {
+        email, // 变量与字段同名的话，可以使用 字段初始化简写语法
+        username,
+        active: true,
+        sign_in_count: 1,
+    }
+}
+```
+
+如上定义了 **结构体** `User`，结构体包含若干字段。结构体的原型不能包含默认值，构建结构体时也应当提供所有字段的值。结构体另有一些简单的记法，参见上述代码中的注释即可。
+
+另外，上面的代码中使用了 `String` 这种自身拥有所有权的类型而不是引用（`&str`）。结构体可以储存被其他对象拥有的数据的引用，不过这么做的话需要用上 **生命周期** （lifetimes），以确保结构体引用的数据有效性跟结构体本身保持一致（后述）。
+
+比较奇怪的是，如上面注释所述，并不能保证一个结构体实例的所有字段的所有权始终由结构体实例（的字段本身）持有。尽管这样可能造成的错误可以在编译期被推断而报告错误，但这种行为还是很奇怪。
+
+``` rust
+fn main() {
+	struct Color(i32, i32, i32);
+	struct Point(i32, i32, i32);
+
+	let black = Color(0, 0, 0);
+	let origin = Point(0, 0, 0);
+}
+```
+
+可以定义与元组类似的结构体，称为 **元组结构体** 。有着结构体名称提供的含义，但没有具体的字段名，只有字段的类型。但需要注意上面代码中 black 和 origin 值是 **不同** 的类型，因为它们是不同的元组结构体的实例。
+
+也可以定义一个没有任何字段的结构体！它们被称为 类单元结构体（unit-like structs）因为它们类似于 `()`，即 unit 类型。类单元结构体常常在你想要在某个类型上实现 trait 但不需要在类型内存储数据的时候发挥作用。
+
+
+``` rust
+#[derive(Debug)] // 增加注解来派生 `Debug` trait
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+fn main() {
+    let rect1 = Rectangle { width: 30, height: 50 };
+
+    println!("rect1 is {:?}", rect1); // 可以使用 `{:#?}` 得到更好看的调试输出
+}
+```
+
+`println!` 宏能处理很多类型的格式，`{}` 默认告诉 println! 使用被称为 `Display` 的格式，而结构体并没有提供一个默认的 `Display` 实现。加入 `:?` 指示符（使用 `{:?}`）告诉 println! 我们想要使用叫做 `Debug` 的输出格式。`Debug` 是一个 trait，允许我们在调试代码时以一种对开发者有帮助的方式打印出结构体。
+
+Rust 确实 包含了打印出调试信息的功能，不过我们必须为结构体显式选择这个功能。为此，在结构体定义之前加上 `#[derive(Debug)]` 注解。
