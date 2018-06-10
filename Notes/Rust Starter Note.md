@@ -456,3 +456,64 @@ fn main() {
 有趣的事实：对于 C++ ，当调用指针对象的成员函数时，我们需要 `->` 来对指针进行解引用（`object->something() 就像 (*object).something()`），而 Rust 中有自动引用和解引用的功能，进行方法调用时， Rust 会自动增加 `&`、`&mut` 或 `*` 以便使符合方法的签名。
 
 调用方法通过点号即可，而调用关联函数则通过 `::` 进行。他们的声明被放在 `impl` 块中，而一个结构体也可以有多个 `impl` 块存在。
+
+``` rust
+fn main() {
+	enum IpAddrKind {
+		V4,
+		V6,
+	}
+	let four = IpAddrKind::V4;
+	let six = IpAddrKind::V6;
+}
+```
+
+枚举可以像大多语言那样使用，就如上面的例子一样。然而别忘了在“猜猜看”中涉及到的枚举的特性（下述）。
+
+``` rust
+fn main() {
+	enum Message {
+		Quit, // 没有关联任何数据
+		Move { x: i32, y: i32 }, // 包含一个匿名结构体
+		Write(String), // 包含单独一个 String
+		ChangeColor(i32, i32, i32), // 包含三个 i32
+	}
+
+	impl Message {
+		fn call(&self) { // &self 就是枚举的值了
+			// method body would be defined here
+		}
+	}
+
+	let m = Message::Write(String::from("hello"));
+	m.call();
+}
+```
+
+Rust 的枚举的每个成员都可以包含（或称 **关联** ）若干个任意类型的变量。另外如同结构体一样，枚举也可以有~~成员函数~~方法。
+
+``` rust
+//enum Option<T> {
+//    Some(T),
+//    None,
+//}
+fn main() {
+    let some_number = Some(5);
+    let x: i8 = 5;
+    let y: Option<i8> = None;//Some(5);
+    
+    // let sum = x + y; 编译器会告诉你不能这样做
+    let sum = x + match y {
+        Some(x) => x,
+        None => 0
+    };
+    
+    println!("{}", sum);
+}
+```
+
+为了避免不可意料的错误，Rust 并没有 `null` 这个概念，但我们有时仍需表达 null 这种状态（一个 nullable 的值），这时我们可以使用 Option 枚举。Option 和它的成员均位于 prelude 中，所以我们不需要显式引用作用域就可以使用他们了。
+
+如上面注释所属的原型，其包含一个 Some 成员（持有一个泛型 `T` ，泛型后述，可理解为 C++ 的模板类型）和一个 None 成员。上面提到没有 null 概念是为了防止不可意料的错误，而使用枚举时自然编译器不会允许一个枚举值直接参与运算或进行类似的操作，进而在编译期就避免了问题发生。如上面代码，我们不能直接进行 `x + y` 运算。在这个例子中使用了 `match` 处理 y 的不同情况。
+
+另外，使用 Some 时编译器可以轻松的推断类型，而使用 None 时则自然不能够推断。故当使用 None 时我们需要显式的给变量声明类型。
