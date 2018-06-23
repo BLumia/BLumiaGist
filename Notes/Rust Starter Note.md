@@ -612,3 +612,33 @@ mod server;
 Rust 使用 `pub` 关键字表示函数或模块是公有的。因为其是开放的，故其它外部程序就可以使用这些函数或模块，此时编译器就不会因为这些函数或模块没有被使用而发出警告。
 
 Rust 的模块访问可见性这个应该不用记，猜也猜得到的规则。
+
+``` rust
+pub mod a {
+    pub mod series {
+        pub mod of {
+            pub fn nested_modules() {}
+        }
+    }
+}
+
+enum TrafficLight {
+    Red,
+    Yellow,
+    Green,
+}
+
+use TrafficLight::*;
+use a::series::of;
+
+fn main() {
+    of::nested_modules(); // a::series::of::nested_modules();
+	let red = Red; // TrafficLight::Red
+}
+```
+
+不难看出 这里的 `use` 以及 `::` 是什么意思。以及，类似别的语言，`use` 关键字只将指定的模块引入作用域；它并不会将其子模块也引入。这就是为什么想要调用 `nested_modules` 函数时仍然必须写成 `of::nested_modules` 。
+
+这里的 `*` 是 **glob 运算符** （glob operator），会将某个命名空间下的所有名称都引入作用域。
+
+当需要访问上层模块内的东西时，可以使用 `super` 关键字，如 `super::client::connect();` ，`super` 也可以用在 use 中，如 `use super::client;`。
