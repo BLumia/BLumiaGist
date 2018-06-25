@@ -642,3 +642,12 @@ fn main() {
 这里的 `*` 是 **glob 运算符** （glob operator），会将某个命名空间下的所有名称都引入作用域。
 
 当需要访问上层模块内的东西时，可以使用 `super` 关键字，如 `super::client::connect();` ，`super` 也可以用在 use 中，如 `use super::client;`。
+
+``` rust
+let v: Vec<i32> = Vec::new();
+let v = vec![1, 2, 3];
+```
+
+Rust 标准库中包含一系列被称为 [**集合**](https://doc.rust-lang.org/std/collections)（collections）的非常有用的数据结构，其中常用的包括 vector ， string 和 hash map 。
+
+部分集合类型使用泛型来实现，如 vector 。另外集合类型的所有权也是比较需要特别关注的地方。
