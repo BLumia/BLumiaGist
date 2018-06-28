@@ -651,3 +651,54 @@ let v = vec![1, 2, 3];
 Rust 标准库中包含一系列被称为 [**集合**](https://doc.rust-lang.org/std/collections)（collections）的非常有用的数据结构，其中常用的包括 vector ， string 和 hash map 。
 
 部分集合类型使用泛型来实现，如 vector 。另外集合类型的所有权也是比较需要特别关注的地方。
+
+``` rust
+fn main() {
+    let mut v = Vec::new();
+    v.push(5);
+	v.push(6);
+	v.pop();
+    let does_not_exist = v.get(404);
+    
+    println!("{}", &v[0]); // 传递的是一个引用
+    println!("{}", v[0]); // 传递一个拷贝（对于 copy trait 的类型）
+    println!("{:#?}", does_not_exist);
+	println!("{}", match does_not_exist {
+        Some(&x) => x,
+        None => 61
+    });
+}
+```
+
+这一段和上一段示例代码一起看。可以使用 `Vec::new()` 构建 vector , Rust 也提供了宏 `vec!` 来构建 vector 。由于可以通过操作（比如 push ）推断泛型的类型，故显式的声明类型并不总是必要的。
+
+访问 vector 的元素可以使用两种方式，使用 `&` 和 `[]` 返回一个引用，或者使用 `get()` 方法以索引作为参数来返回一个 `Option<&T>` 。其中前者注意 `&` （暂不清楚不写 `&` 是不是就是按照是否是 copy trait 类型来决定得到的是所有权还是拷贝），后者需要注意的则是传递的 Option 内的是 `&T` 而不是 `T` 。两种访问方式中，前者如果访问越界的下标则会导致崩溃，后者访问则不会崩溃以便做错误处理。
+
+vector 有 push 有 pop ，干啥用的用脚后跟想一想。
+
+``` rust
+fn main() {
+	let mut v = vec![100, 32, 57];
+    for i in &mut v {
+        *i += 50;
+        println!("{}", i);
+    }
+	
+    #[derive(Debug)]
+    enum SpreadsheetCell {
+        Int(i32),
+        Text(String),
+	}
+
+    let row = vec![
+        SpreadsheetCell::Int(3),
+        SpreadsheetCell::Text(String::from("blue")),
+    ];
+	
+	println!("{:#?}", &row[0]);
+}
+```
+
+可以像数组一样遍历 vector ，对于需要改变值的情况，依然需要标 `mut` 。
+
+另外， vector 里的东西的类型可以是枚举，故可以通过这种形式实现一个 vector 存多种不同类型的东西。
