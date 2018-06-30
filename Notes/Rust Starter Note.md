@@ -702,3 +702,49 @@ fn main() {
 可以像数组一样遍历 vector ，对于需要改变值的情况，依然需要标 `mut` 。
 
 另外， vector 里的东西的类型可以是枚举，故可以通过这种形式实现一个 vector 存多种不同类型的东西。
+
+``` rust
+fn main() {
+    let mut str0 = String::new();
+
+    let str_slice = "initial contents";
+    let str1 = str_slice.to_string();
+    let str2 = String::from("initial contents");
+    let str3 = str1 + &str2; // 注意，str1的所有权这就没了..
+	str0.push('f');
+    str0.push_str("uck");
+	str0.push_str(&str3);
+	let str4 = format!("{}-{}-{}", str_slice, str0, str3);
+    
+    println!("{}", str4); // println! 这个宏似乎并不会拿所有权
+}
+```
+
+Rust 的核心语言中的字符串其实只有 `str` （字符串 slice）这么一种（通常以被借用的形式 `&str` 出现）。称作 `String` 的类型是由标准库提供的，而没有写进核心语言部分。
+
+String 有 `push` 来往里追加字符类型，和 `push_str` 追加 `String` 或者 `&str`。
+
+String 重写了 `+` 运算符，但注意上面示例中的加号前后并非故意示例所有权而这样写，而是必须这样写，原因是其原型类似 `fn add(self, s: &str) -> String {` （这并不是标准库中实际的签名，标准库中的 `add` 使用泛型定义）。
+
+``` rust
+fn main() {
+    let fsck_str = String::from("fsck");
+    let fsck = fsck_str.as_str();
+    let woc = "卧槽";
+    let f = &fsck[0..1];
+    //let panic = &woc[0..1]; // 会导致崩溃！
+    
+    println!("{}", f);
+    for c in woc.chars() {
+        println!("{}", c);
+    }
+}
+```
+
+String 是一个 `Vec<u8>` 的封装，但不支持下标索引。由于 Rust 的字符串（无论 `str` 还是标准库中的 `String`）都存储的是 utf-8 字符串，故下标索引有时候会返回非期望的内容导致错误，所以这是 Rust 选择 String 不支持下标索引的原因之一...（ps. ~~`&"hello"[0]` 会返回 104 而不是 h~~ 这个说法应该是错的，`str` 也不能这样索引）。
+
+当需要类似的下标访问需求时，我们则需要操作一个 `&str` 而不是 `String` 了。使用 `String::as_str()` 或 `String::as_mut_str()` 等之类的方式得到 `&str` 以便操作。但需要注意，依然不能通过下标直接访问，而是要接着 slice 。
+
+接着 slice 依然是很有可能导致崩溃的，如上面例子中那行被注释掉的语句如果取消注释就会导致程序在运行时 panic ...
+
+也可以使用 `.chars()` 来得到每个字母（字形簇），也可以使用 `.bytes()` 得到每个字节...
