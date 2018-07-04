@@ -748,3 +748,36 @@ String 是一个 `Vec<u8>` 的封装，但不支持下标索引。由于 Rust �
 接着 slice 依然是很有可能导致崩溃的，如上面例子中那行被注释掉的语句如果取消注释就会导致程序在运行时 panic ...
 
 也可以使用 `.chars()` 来得到每个字母（字形簇），也可以使用 `.bytes()` 得到每个字节...
+
+``` rust
+fn main() {
+    use std::collections::HashMap;
+
+    let teams  = vec![String::from("Blue"), String::from("Yellow")];
+    let initial_scores = vec![10, 50];
+    
+    let scores_from_collect: HashMap<_, _> = teams.iter().zip(initial_scores.iter()).collect();
+    let mut scores = HashMap::new();
+    
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Blue"), 25); // 覆盖
+    scores.insert(String::from("Yellow"), 50);
+    scores.entry(String::from("Blue")).or_insert(50); // 检查是否存在，不存在则插入
+    
+    let team_name = String::from("Blue");
+    let _score = scores.get(&team_name);
+    
+    println!("{:?}", scores_from_collect);
+    for (key, value) in &scores {
+        println!("{}: {}", key, value);
+    }
+}
+```
+
+HashMap 由于不常用因而没有内置到 prelude 中，所以需要自己 use ，废话是，所有的键必须是相同类型，值也必须都是相同类型。
+
+除了上面所示的方法之外还可以通过包含了元组（作为键值对）的 vector 来构建，通过调用 vector 的 `collect` 方法来得到一个集合类型（其类型就可以是 HashMap ）。由于类型并不是确定的，故需要显式的声明类型为 `HashMap<_, _>` 。
+
+另外，无论是键还是值，传递给 HashMap 的值的所有权会被移交。
+
+entry 是一个枚举，表示可能存在或不存在的一个值。`or_insert` 则会在不存在的时候插入并返回一个可变引用（`&mut V`），我们可以使用 `*` 解引用并更新变量的值。
