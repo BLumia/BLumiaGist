@@ -104,8 +104,8 @@ fn main() {
         .expect("Please type a number!");
 
     println!("You guessed: {}", guess);
-	
-	match guess.cmp(&secret_number) {
+    
+    match guess.cmp(&secret_number) {
         Ordering::Less => println!("Too small!"),
         Ordering::Greater => println!("Too big!"),
         Ordering::Equal => println!("You win!"),
@@ -186,9 +186,9 @@ fn main() {
     let tup = (500, 6.4, 1); // 相当于：let tup: (i32, f64, u8) = (500, 6.4, 1);
     let (x, y, z) = tup; // 这叫做 解构（destructuring）
     println!("The value of y is: {}", y);
-	let six_point_four = tup.1; // 可以使用点号后跟值的索引来直接访问
-	
-	let a = [1, 2, 3, 4, 5]; // 数组
+    let six_point_four = tup.1; // 可以使用点号后跟值的索引来直接访问
+    
+    let a = [1, 2, 3, 4, 5]; // 数组
     let first = a[0];
     let second = a[1];
 }
@@ -199,7 +199,7 @@ Rust 中函数的声明位置是无所谓的。有返回值的函数在一个箭
 ``` rust
 fn main() {
     another_function(5, 6);
-	let x = five();
+    let x = five();
     println!("The value of x is: {}", x);
 }
 
@@ -236,11 +236,11 @@ fn main() {
         5
     } else {
         6
-		//"six"
+        //"six"
     };
     println!("The value of number is: {}", number);
-	
-	let a = [10, 20, 30, 40, 50];
+    
+    let a = [10, 20, 30, 40, 50];
     let mut index = 0;
     while index < 5 {
         println!("the value is: {}", a[index]);
@@ -257,8 +257,8 @@ fn main() {
     for element in a.iter() {
         println!("the value is: {}", element);
     }
-	
-	for number in (1..4).rev() { // rev 反转一个 Range 里的东西
+    
+    for number in (1..4).rev() { // rev 反转一个 Range 里的东西
         println!("{}!", number);
     }
     println!("LIFTOFF!!!");
@@ -278,9 +278,9 @@ fn main() {
 ``` rust
 fn main() {
     let s1 = String::from("hello");
-	let s2 = s1; // 如果写成 s1.clone() 就不一样了
+    let s2 = s1; // 如果写成 s1.clone() 就不一样了
 
-	println!("{}, world!", s1); // 此时 s1 已经失效了
+    println!("{}, world!", s1); // 此时 s1 已经失效了
 }
 ```
 
@@ -332,9 +332,9 @@ fn main() {
     let my_string_literal = "hello world"; // 字符串字面值其实就是个字符串 slice
     let word = first_word(&my_string_literal[..]); // 所以可以这样
     let word = first_word(my_string_literal); // 也可以这样
-	
-	let a = [1, 2, 3, 4, 5];
-	let slice = &a[1..3]; // 类型是 &[i32]
+    
+    let a = [1, 2, 3, 4, 5];
+    let slice = &a[1..3]; // 类型是 &[i32]
 }
 ```
 
@@ -388,11 +388,11 @@ fn build_user(email: String, username: String) -> User { // 别忘了，这里�
 
 ``` rust
 fn main() {
-	struct Color(i32, i32, i32);
-	struct Point(i32, i32, i32);
+    struct Color(i32, i32, i32);
+    struct Point(i32, i32, i32);
 
-	let black = Color(0, 0, 0);
-	let origin = Point(0, 0, 0);
+    let black = Color(0, 0, 0);
+    let origin = Point(0, 0, 0);
 }
 ```
 
@@ -459,12 +459,12 @@ fn main() {
 
 ``` rust
 fn main() {
-	enum IpAddrKind {
-		V4,
-		V6,
-	}
-	let four = IpAddrKind::V4;
-	let six = IpAddrKind::V6;
+    enum IpAddrKind {
+        V4,
+        V6,
+    }
+    let four = IpAddrKind::V4;
+    let six = IpAddrKind::V6;
 }
 ```
 
@@ -472,21 +472,21 @@ fn main() {
 
 ``` rust
 fn main() {
-	enum Message {
-		Quit, // 没有关联任何数据
-		Move { x: i32, y: i32 }, // 包含一个匿名结构体
-		Write(String), // 包含单独一个 String
-		ChangeColor(i32, i32, i32), // 包含三个 i32
-	}
+    enum Message {
+        Quit, // 没有关联任何数据
+        Move { x: i32, y: i32 }, // 包含一个匿名结构体
+        Write(String), // 包含单独一个 String
+        ChangeColor(i32, i32, i32), // 包含三个 i32
+    }
 
-	impl Message {
-		fn call(&self) { // &self 就是枚举的值了
-			// method body would be defined here
-		}
-	}
+    impl Message {
+        fn call(&self) { // &self 就是枚举的值了
+            // method body would be defined here
+        }
+    }
 
-	let m = Message::Write(String::from("hello"));
-	m.call();
+    let m = Message::Write(String::from("hello"));
+    m.call();
 }
 ```
 
@@ -520,22 +520,22 @@ fn main() {
 
 ``` rust
 fn main() {
-	let some_u8_value = Some(3u8);
-	
-	match some_u8_value {
-		Some(3) => println!("three"),
-		_ => (),
-	}
-	
-	if let Some(3) = some_u8_value {
-		println!("three");
-	}
-	
-	let somevalue = if let Some(i) = some_u8_value {
-		println!("{}", i); i
-	} else {
-	    0
-	};
+    let some_u8_value = Some(3u8);
+    
+    match some_u8_value {
+        Some(3) => println!("three"),
+        _ => (),
+    }
+    
+    if let Some(3) = some_u8_value {
+        println!("three");
+    }
+    
+    let somevalue = if let Some(i) = some_u8_value {
+        println!("{}", i); i
+    } else {
+        0
+    };
     
     println!("{}", somevalue);
 }
@@ -633,7 +633,7 @@ use a::series::of;
 
 fn main() {
     of::nested_modules(); // a::series::of::nested_modules();
-	let red = Red; // TrafficLight::Red
+    let red = Red; // TrafficLight::Red
 }
 ```
 
@@ -656,14 +656,14 @@ Rust 标准库中包含一系列被称为 [**集合**](https://doc.rust-lang.org
 fn main() {
     let mut v = Vec::new();
     v.push(5);
-	v.push(6);
-	v.pop();
+    v.push(6);
+    v.pop();
     let does_not_exist = v.get(404);
     
     println!("{}", &v[0]); // 传递的是一个引用
     println!("{}", v[0]); // 传递一个拷贝（对于 copy trait 的类型）
     println!("{:#?}", does_not_exist);
-	println!("{}", match does_not_exist {
+    println!("{}", match does_not_exist {
         Some(&x) => x,
         None => 61
     });
@@ -678,24 +678,24 @@ vector 有 push 有 pop ，干啥用的用脚后跟想一想。
 
 ``` rust
 fn main() {
-	let mut v = vec![100, 32, 57];
+    let mut v = vec![100, 32, 57];
     for i in &mut v {
         *i += 50;
         println!("{}", i);
     }
-	
+    
     #[derive(Debug)]
     enum SpreadsheetCell {
         Int(i32),
         Text(String),
-	}
+    }
 
     let row = vec![
         SpreadsheetCell::Int(3),
         SpreadsheetCell::Text(String::from("blue")),
     ];
-	
-	println!("{:#?}", &row[0]);
+    
+    println!("{:#?}", &row[0]);
 }
 ```
 
@@ -711,10 +711,10 @@ fn main() {
     let str1 = str_slice.to_string();
     let str2 = String::from("initial contents");
     let str3 = str1 + &str2; // 注意，str1的所有权这就没了..
-	str0.push('f');
+    str0.push('f');
     str0.push_str("uck");
-	str0.push_str(&str3);
-	let str4 = format!("{}-{}-{}", str_slice, str0, str3);
+    str0.push_str(&str3);
+    let str4 = format!("{}-{}-{}", str_slice, str0, str3);
     
     println!("{}", str4); // println! 这个宏似乎并不会拿所有权
 }
@@ -788,39 +788,39 @@ use std::fs::File;
 
 fn main() {
     panic!("crash and burn");
-	
-	let f = File::open("hello.txt");
+    
+    let f = File::open("hello.txt");
     let f = match f {
         Ok(file) => file,
         Err(error) => {
             panic!("There was a problem opening the file: {:?}", error)
         },
     };
-	
-	let f = File::open("hello.txt").unwrap();
-	
-	let f = File::open("hello.txt").expect("Failed to open hello.txt");
-	
-	fn read_username_from_file() -> Result<String, io::Error> {
-		let f = File::open("hello.txt");
-		let mut f = match f {
-			Ok(file) => file,
-			Err(e) => return Err(e),
-		};
-		let mut s = String::new();
-		match f.read_to_string(&mut s) {
-			Ok(_) => Ok(s),
-			Err(e) => Err(e),
-		}
-	}
-	
-	fn read_username_from_file() -> Result<String, io::Error> {
-		let mut s = String::new();
-		File::open("hello.txt")?.read_to_string(&mut s)?; // 与下面两行效果一致
-		// let mut f = File::open("hello.txt")?;
-		// f.read_to_string(&mut s)?;
-		Ok(s)
-	}
+    
+    let f = File::open("hello.txt").unwrap();
+    
+    let f = File::open("hello.txt").expect("Failed to open hello.txt");
+    
+    fn read_username_from_file() -> Result<String, io::Error> {
+        let f = File::open("hello.txt");
+        let mut f = match f {
+            Ok(file) => file,
+            Err(e) => return Err(e),
+        };
+        let mut s = String::new();
+        match f.read_to_string(&mut s) {
+            Ok(_) => Ok(s),
+            Err(e) => Err(e),
+        }
+    }
+    
+    fn read_username_from_file() -> Result<String, io::Error> {
+        let mut s = String::new();
+        File::open("hello.txt")?.read_to_string(&mut s)?; // 与下面两行效果一致
+        // let mut f = File::open("hello.txt")?;
+        // f.read_to_string(&mut s)?;
+        Ok(s)
+    }
 }
 ```
 
@@ -829,3 +829,33 @@ fn main() {
 当我们需要可以处理的异常的时候，应当使用 `Result` 枚举而不是立即 panic 。我们可以使用 `match` 来常规的处理内容，也可以使用能够自定义 panic 提示的 `expect()` 或者使用默认 panic 提示的 `unwrap()` ，他们会在非错误时返回 `Result` 中 `Ok` 的值，而在错误时 panic 。
 
 需要提供错误处理支持时，也只需返回 Result 枚举，除了常规的返回枚举内容之外，可以使用 `?` 简化写法。 `?` 在 `Ok` 时返回 `Ok` 中的值，在 `Err` 时则直接把 `Err` 作为 `?` 所在函数的返回值（这时相当于写了 `return`）。因而， `?` 只能使用在类型为 `Result` 枚举的函数内。
+
+``` rust
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Point<T> {
+    fn x(&self) -> &T {
+        &self.x
+    }
+}
+
+impl Point<f32> {
+    fn distance_from_origin(&self) -> f32 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
+
+fn main() {
+    let p = Point { x: 5, y: 10 };
+    println!("p.x = {}", p.x());
+}
+```
+
+泛型用法如此，对于一个泛型，可以针对某个实际的类型单独进行实现，如上的 `distance_from_origin()` 段为 `Point<f32>` 仅有的方法，而 `x()` 则是 `Point<T>` 都可用的。
+
+`impl<T>` 中的 `<T>` 声明了泛型以便在后面使用。
+
+泛型并没有额外的性能开销，因为 Rust 在编译时就做了 **单态化** （monomorphization），为所有使用某个泛型的类型生成一份实现，最终实际则直接调用该实现。
