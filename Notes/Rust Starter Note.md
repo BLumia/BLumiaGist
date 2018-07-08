@@ -781,3 +781,51 @@ HashMap 由于不常用因而没有内置到 prelude 中，所以需要自己 us
 另外，无论是键还是值，传递给 HashMap 的值的所有权会被移交。
 
 entry 是一个枚举，表示可能存在或不存在的一个值。`or_insert` 则会在不存在的时候插入并返回一个可变引用（`&mut V`），我们可以使用 `*` 解引用并更新变量的值。
+
+``` rust
+// 此段无法编译执行
+use std::fs::File;
+
+fn main() {
+    panic!("crash and burn");
+	
+	let f = File::open("hello.txt");
+    let f = match f {
+        Ok(file) => file,
+        Err(error) => {
+            panic!("There was a problem opening the file: {:?}", error)
+        },
+    };
+	
+	let f = File::open("hello.txt").unwrap();
+	
+	let f = File::open("hello.txt").expect("Failed to open hello.txt");
+	
+	fn read_username_from_file() -> Result<String, io::Error> {
+		let f = File::open("hello.txt");
+		let mut f = match f {
+			Ok(file) => file,
+			Err(e) => return Err(e),
+		};
+		let mut s = String::new();
+		match f.read_to_string(&mut s) {
+			Ok(_) => Ok(s),
+			Err(e) => Err(e),
+		}
+	}
+	
+	fn read_username_from_file() -> Result<String, io::Error> {
+		let mut s = String::new();
+		File::open("hello.txt")?.read_to_string(&mut s)?; // 与下面两行效果一致
+		// let mut f = File::open("hello.txt")?;
+		// f.read_to_string(&mut s)?;
+		Ok(s)
+	}
+}
+```
+
+在遇到 `panic!` 时程序会 panic （废话），此时默认情况程序会回溯栈并清理它遇到的每一个函数的数据，当然也可以选择直接终止（abort）并让操作系统处理回收程序被分配的空间，可以在 cargo 配置文件的 profile 段（比如 `[profile.release]` ）内增加 `panic = 'abort'` 配置。
+
+当我们需要可以处理的异常的时候，应当使用 `Result` 枚举而不是立即 panic 。我们可以使用 `match` 来常规的处理内容，也可以使用能够自定义 panic 提示的 `expect()` 或者使用默认 panic 提示的 `unwrap()` ，他们会在非错误时返回 `Result` 中 `Ok` 的值，而在错误时 panic 。
+
+需要提供错误处理支持时，也只需返回 Result 枚举，除了常规的返回枚举内容之外，可以使用 `?` 简化写法。 `?` 在 `Ok` 时返回 `Ok` 中的值，在 `Err` 时则直接把 `Err` 作为 `?` 所在函数的返回值（这时相当于写了 `return`）。因而， `?` 只能使用在类型为 `Result` 枚举的函数内。
