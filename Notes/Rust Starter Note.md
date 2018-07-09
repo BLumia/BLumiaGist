@@ -859,3 +859,72 @@ fn main() {
 `impl<T>` 中的 `<T>` 声明了泛型以便在后面使用。
 
 泛型并没有额外的性能开销，因为 Rust 在编译时就做了 **单态化** （monomorphization），为所有使用某个泛型的类型生成一份实现，最终实际则直接调用该实现。
+
+``` rust
+pub trait Summarizable {
+    fn summary(&self) -> String;
+}
+
+pub struct Tweet {
+    pub author: String,
+    pub content: String,
+}
+
+impl Summarizable for Tweet {
+    fn summary(&self) -> String {
+        format!("{}, by {}", self.content, self.author)
+    }
+}
+
+fn main() {
+    let tweet = Tweet {
+        author: String::from("horse_ebooks"),
+        content: String::from("of course, as you probably already know, people")
+    };
+    
+    println!("1 new tweet: {}", tweet.summary());
+}
+```
+
+trait 类似其它语言的接口类的概念，提供若干需要实现的函数，也可以给某个~~接口~~函数提供默认的实现。
+
+使用 `trait` 关键字声明一个 trait ，使用 `impl <trait name> for <struct name>` 来实现某个 trait 。
+
+trait 可以提供默认的实现，但是在重载过的实现中调用默认实现是不可能的。
+
+``` rust
+// fn some_function<T: Display + Clone, U: Clone + Debug>(t: T, u: U) -> i32 {
+// 上下两种记法等效
+// fn some_function<T, U>(t: T, u: U) -> i32
+//     where T: Display + Clone,
+//           U: Clone + Debug
+// {
+
+fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
+    let mut largest = list[0];
+
+    for &item in list.iter() {
+        if item > largest {
+            largest = item;
+        }
+    }
+
+    largest
+}
+
+fn main() {
+    let number_list = vec![34, 50, 25, 100, 65];
+    let result = largest(&number_list);
+    println!("The largest number is {}", result);
+
+    let char_list = vec!['y', 'm', 'a', 'q'];
+    let result = largest(&char_list);
+    println!("The largest char is {}", result);
+}
+```
+
+可以对泛型使用 trait 作为类型约束，称为 **trait bound** 。作为限制时如需要表示某个 ~~类~~ 结构体需要同时实现多个 trait 的话，使用 `+` 连接多个 trait 即可。在表示上过长可能影响阅读时，可以使用 `where` 把约束写在后面。
+
+也可以对任何实现了特定 trait 的类型有条件的实现 trait。对任何满足特定 trait bound 的类型实现 trait 被称为 _blanket implementations_ 。如，标准库为任何实现了 `Display` trait 的类型实现了 `ToString` trait。这个 impl 块的声明看起来像 `impl<T: Display> ToString for T {` 。
+
+
