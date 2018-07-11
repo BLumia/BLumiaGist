@@ -927,4 +927,45 @@ fn main() {
 
 也可以对任何实现了特定 trait 的类型有条件的实现 trait。对任何满足特定 trait bound 的类型实现 trait 被称为 _blanket implementations_ 。如，标准库为任何实现了 `Display` trait 的类型实现了 `ToString` trait。这个 impl 块的声明看起来像 `impl<T: Display> ToString for T {` 。
 
+``` rust
+use std::fmt::Display;
 
+fn longest_with_an_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
+    where T: Display
+{
+    println!("Announcement! {}", ann);
+    longest(x, y)
+}
+
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+
+fn main() {
+    let s: &'static str = "I have a static lifetime.";
+    let string1 = String::from("long string is long");
+    let string2 = String::from("xyz"); // 试试注释此行并取消注释下面的那一行
+    let result;
+    {
+        // let string2 = String::from("xyz"); // 说的是这行
+        result = longest_with_an_announcement(string1.as_str(), string2.as_str(), "...");
+    }
+    println!("The longest string is {}", result);
+}
+```
+
+注解 `'a` 表示一个生命周期 `a` ，表示其修饰的变量具有生命周期 `a` 。对于上例中的 `longest()` 函数，参数 `x` 和 `y` 以及其返回值的生命周期均为 `a` 。
+
+上面的例子如果按照注释操作的话会无法通过编译，原因是 `longest_with_an_announcement()` 函数的参数和返回值是同样生命周期的，但其参数 `string2` 的生命周期和 `result` 明显不一样长（在引用 `result` 仍有效时 `string2` 已经无效了。生命周期的声明在此避免了此类可能产生潜在错误的情况（把错误提到了编译期）。
+
+`'static` 生命周期存活于整个程序期间。所有的字符串字面值都拥有 `'static` 生命周期。
+
+函数的参数和返回值的生命周期在编译器可以推断出来的情况下是可以省略的，规则如下：
+
+ - 每一个是引用的参数都有它自己的不同于其它参数的生命周期参数，他们称为 **输入生命周期参数** 。例子：`fn foo<'a, 'b>(x: &'a i32, y: &'b i32)` 。
+ - 如果只有一个输入生命周期参数，那么它被赋予所有输出生命周期参数。例子：`fn foo<'a>(x: &'a i32) -> &'a i32` 。
+ - 如果有多个输入生命周期参数，而由于它是关联函数而包含参数 `&self` 或 `&mut self`，则 `self` 的生命周期被赋给所有输出生命周期参数。
