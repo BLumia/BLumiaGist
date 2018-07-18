@@ -969,3 +969,42 @@ fn main() {
  - 每一个是引用的参数都有它自己的不同于其它参数的生命周期参数，他们称为 **输入生命周期参数** 。例子：`fn foo<'a, 'b>(x: &'a i32, y: &'b i32)` 。
  - 如果只有一个输入生命周期参数，那么它被赋予所有输出生命周期参数。例子：`fn foo<'a>(x: &'a i32) -> &'a i32` 。
  - 如果有多个输入生命周期参数，而由于它是关联函数而包含参数 `&self` 或 `&mut self`，则 `self` 的生命周期被赋给所有输出生命周期参数。
+ 
+``` rust
+pub fn greeting(name: &str) -> String {
+    format!("Hello {}!", name)
+}
+
+pub fn add_two(a: i32) -> i32 {
+    a + 2
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_adds_two() {
+        assert_eq!(4, add_two(2));
+    }
+	
+	#[test]
+    fn greeting_contains_name() {
+        let result = greeting("Carol");
+        assert!(
+            result.contains("Carol"),
+            "Greeting did not contain name, value was `{}`", result
+        );
+    }
+}
+```
+
+使用 `cargo test` 来运行测试，测试会根据工程中的注解和所用参数（如果有，后述）执行各相应测试并汇报结果。
+
+可以使用 `assert_eq!`， `assert_ne!` 和 `assert!` 宏帮助测试，当不满足时这些宏内部会使用 `panic!` 。我们实际测试也是根据我们的测试用例是否 panic 来判定是否通过的。
+
+未单独配置的情况下，成功的测试用例的 stdout 不会被输出（即会被捕获），失败的则会。
+
+也可以向 `assert!`、`assert_eq!` 和 `assert_ne!` 宏传递可选的失败信息参数，在测试失败时将自定义失败信息一同打印出来。失败信息参数实际是会被传给 `format!` 宏，故用法一致。
+
+对于理应 panic 的用例，可以在 `#[test]` 注解后添加 `#[should_panic]` 注解表示该用例应该 panic 。
