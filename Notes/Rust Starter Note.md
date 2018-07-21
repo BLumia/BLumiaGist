@@ -1008,3 +1008,51 @@ mod tests {
 也可以向 `assert!`、`assert_eq!` 和 `assert_ne!` 宏传递可选的失败信息参数，在测试失败时将自定义失败信息一同打印出来。失败信息参数实际是会被传给 `format!` 宏，故用法一致。
 
 对于理应 panic 的用例，可以在 `#[test]` 注解后添加 `#[should_panic]` 注解表示该用例应该 panic 。
+
+``` rust
+pub fn add_two(a: i32) -> i32 {
+    a + 2
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add_two_and_two() {
+        assert_eq!(4, add_two(2));
+    }
+
+    #[test]
+    fn add_three_and_two() {
+        assert_eq!(5, add_two(3));
+    }
+
+    #[test]
+    fn one_hundred() {
+        assert_eq!(102, add_two(100));
+    }
+	
+    #[test]
+    #[ignore]
+    fn expensive_test() {
+        // code that takes an hour to run
+    }
+}
+```
+
+``` bash
+$ cargo test -- --test-threads=1 # 单线程跑所有的测试，相当于不使用任何并行机制
+$ cargo test -- --nocapture # 不对成功的测试进行对 stdout 输出的捕获
+$ cargo test add # 对于上例，会执行所有函数名由 add 开头的测试用例
+$ cargo test add_two_and_two # 指定执行某个测试
+$ cargo test -- --ignored # 执行标注了 ignore 的测试
+```
+
+cargo 运行测试的命令类似于 `cargo test <传递给 cargo test 的参数> -- <传递给测试二进制文件的参数>`，不过实际上传递给测试二进制文件的参数好像依然是 cargo test 在处理（比如原程序不接受任何命令行参数的时候使用 `cargo test -- --help` 依然能得到一些帮助输出，而执行 `<二进制文件名> --help` 却并没有什么用），不太清楚区别。
+
+运行 `cargo test --help` 会告诉你 cargo test 的相关参数，而运行 `cargo test -- --help` 则会告诉你可以在分隔符 `--` 之后使用的相关参数。（这不还是都是给 cargo test 用的么）
+
+被标注 ignore 的测试在执行测试时会被忽略，而使用 `--ignored` 则可以单独执行这些测试。
+
+可以通过函数名前缀来对测试潜在的分组，并使用指定这个前缀来执行这组测试。但只能一次执行一组测试，即 cargo test 后只能跟一个名字作为待测试的用例名或组（前缀）名。
