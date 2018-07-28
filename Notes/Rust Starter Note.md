@@ -1056,3 +1056,27 @@ cargo 运行测试的命令类似于 `cargo test <传递给 cargo test 的参数
 被标注 ignore 的测试在执行测试时会被忽略，而使用 `--ignored` 则可以单独执行这些测试。
 
 可以通过函数名前缀来对测试潜在的分组，并使用指定这个前缀来执行这组测试。但只能一次执行一组测试，即 cargo test 后只能跟一个名字作为待测试的用例名或组（前缀）名。
+
+`#[cfg(test)]` 注解告诉 Rust 只在执行 cargo test 时才编译和运行测试代码，而在运行 cargo build 时不这么做。
+
+代码内使用测试注解并位于 tests 模块下的即单元测试，因为单元测试依然位于整体代码内，故私有函数依然是可以被单元测试访问的。
+
+``` rust
+// tests/integration_test.rs
+// 假定是库 adder 的集成测试
+// $ cargo test --test integration_test # 运行该集成测试
+extern crate adder;
+
+#[test]
+fn it_adds_two() {
+    assert_eq!(4, adder::add_two(2));
+}
+```
+
+集成测试只适用于库 crate ，二进制项目没办法被 `extern crate` 故无法这样测试。
+
+集成测试对于待测试的库则是完全外部的，等同于使用待测库的其它普通程序。集成测试应位于工程目录的 test 子目录内，当存在时 `cargo test` 也会执行集成测试。
+
+每一个 `tests` 目录中的文件都被编译为单独的 crate 并被认为是集成测试模块而出现在测试结果中，使用 `<模块名称>/mods.rs` 规则的则不会被认为是集成测试模块，这在测试需要非测试作用的公共工具模块时很有用。
+
+可以通过指定测试函数的名称作为 `cargo test` 的参数来运行特定集成测试。也可以使用 `cargo test` 的 `--test` 后跟文件的名称来运行某个特定集成测试文件中的所有测试
