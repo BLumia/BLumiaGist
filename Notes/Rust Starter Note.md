@@ -1107,3 +1107,16 @@ fn main() {
 可以通过结合使用泛型和 Trait bound 来使用闭包，如 `struct Cacher<T> where T: Fn(u32) -> u32` 或记作 `struct Cacher<T: Fn(u32) -> u32>` 。
 
 闭包捕获变量不需要像 C++ Lambda 一样声明要捕获的变量以及以何种方式进行捕获，而根据实际使用情况自行推断。如果我们希望强制闭包获取其使用的环境值的所有权，可以在参数列表前使用 move 关键字（如 `let equal_to_x = move |z| z == x;`）。这个技巧在将闭包传递给新线程以便将数据移动到新线程中时最为实用。
+
+``` bash
+$ cargo build
+    Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
+$ cargo build --release
+    Finished release [optimized] target(s) in 0.0 secs
+```
+
+在 Rust 中 发布配置（release profiles）是预定义的、可定制的带有不同选项的配置，他们允许程序员更多的控制代码编译的多种选项。每一个配置都彼此相互独立。
+
+Cargo 有两个主要的配置：运行 cargo build 时采用的 `dev` 配置和运行 `cargo build --release` 的 `release` 配置。`dev` 配置被定义为开发时的好的默认配置，release 配置则有着良好的发布构建的默认配置。
+
+对于各个发布配置的实际配置选项，在 `Cargo.toml` 的 `[profile.*]` 段下（星号替换为实际的发布配置名），如 `[profile.dev]` 。
