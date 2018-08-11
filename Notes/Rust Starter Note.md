@@ -1108,6 +1108,56 @@ fn main() {
 
 闭包捕获变量不需要像 C++ Lambda 一样声明要捕获的变量以及以何种方式进行捕获，而根据实际使用情况自行推断。如果我们希望强制闭包获取其使用的环境值的所有权，可以在参数列表前使用 move 关键字（如 `let equal_to_x = move |z| z == x;`）。这个技巧在将闭包传递给新线程以便将数据移动到新线程中时最为实用。
 
+``` rust
+struct Counter {
+    count: u32,
+}
+
+impl Counter {
+    fn new() -> Counter {
+        Counter { count: 0 }
+    }
+}
+
+impl Iterator for Counter {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.count += 1;
+
+        if self.count < 3 {
+            Some(self.count)
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let mut counter = Counter::new();
+
+    assert_eq!(counter.next(), Some(1));
+    assert_eq!(counter.next(), Some(2));
+    assert_eq!(counter.next(), None);
+	
+    let v1: Vec<i32> = vec![1, 2, 3];
+    let v2: Vec<_> = v1.iter().map(|x| x + 1).collect();
+    assert_eq!(v2, vec![2, 3, 4]);
+}
+```
+
+迭代器（iterator）负责遍历序列中的每一项和决定序列何时结束的逻辑。Rust 中迭代器都实现了一个叫做 `Iterator` 的定义于标准库的 trait 。
+
+通过实现 `Iterator` 即可使一个类型可被迭代。迭代器需要至少实现 `next()` 。迭代器是惰性的（调用 `next()` 才会移到下一个需访问的元素，而调用 `next()` 被称为在消费迭代器）。
+
+`iter()` 方法生成一个不可变引用的迭代器。上例中，如果我们需要一个获取 v1 所有权并返回拥有所有权的迭代器，则可以调用 `into_iter` 而不是 `iter`。类似的，如果我们希望迭代可变引用，则可以调用 `iter_mut` 。
+
+迭代器的 filter 方法获取一个使用迭代器的每一个项并返回布尔值的闭包。如果闭包返回 true，其值将会包含在 filter 提供的新迭代器中。如果闭包返回 false，其值不会包含在结果迭代器中。
+
+map 方法使用闭包来调用每个元素以生成新的迭代器。
+
+collect 收集迭代器的值并构成一个新的集合类型。
+
 ``` bash
 $ cargo build
     Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs
