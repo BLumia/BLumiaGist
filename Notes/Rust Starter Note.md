@@ -1170,3 +1170,34 @@ $ cargo build --release
 Cargo 有两个主要的配置：运行 cargo build 时采用的 `dev` 配置和运行 `cargo build --release` 的 `release` 配置。`dev` 配置被定义为开发时的好的默认配置，release 配置则有着良好的发布构建的默认配置。
 
 对于各个发布配置的实际配置选项，在 `Cargo.toml` 的 `[profile.*]` 段下（星号替换为实际的发布配置名），如 `[profile.dev]` 。
+
+``` rust
+enum List {
+    Cons(i32, Box<List>),
+    Nil,
+}
+
+use List::{Cons, Nil};
+
+fn main() {
+    let list = Cons(1,
+        Box::new(Cons(2,
+            Box::new(Cons(3,
+                Box::new(Nil))))));
+
+    let b = Box::new(5);
+    println!("b = {}", b);
+}
+```
+
+Rust 也存在指针的概念，其中最常见的就是 **引用** （_reference_， `&`） 了。而 **智能指针** 则是一类表现类似指针而包含额外元数据和功能的数据结构。普通引用和智能指针的一个额外的区别是，引用是一类只借用数据的指针，而大部分情况，智能指针 **拥有** 他们指向的数据。
+
+智能指针常使用结构体来实现，他们实现了 `Deref` （使其表现像引用一样）和 `Drop` （离开作用域时运行的代码）trait。
+
+`String` 和 `Vec<T>` 其实也是智能指针。
+
+`Box<T>` 允许你将一个值放在堆上而不是栈上。
+
+Rust 需要在编译时知道类型占用多少空间，故在枚举或结构体中尝试使用自身作为成员（来试图构成递归类型）会导致报错。但使用 `Box<T>` 后其类型所占的空间就确定了。上例的 List 即通过 `Box<T>` 构成 cons list 这种递归类型。
+
+（注：很容易可以联想到单链表，然而使用 `Cons(i32, &List)` 会提示确少生命周期修饰符，使用 `Cons(i32, &'a List)` 则提示生命周期未定义，而 `enum List<'a>` 后则又开始提示确少生命周期修饰符。原因尚未搞懂）
