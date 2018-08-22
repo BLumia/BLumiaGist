@@ -1201,3 +1201,47 @@ Rust 也存在指针的概念，其中最常见的就是 **引用** （_referenc
 Rust 需要在编译时知道类型占用多少空间，故在枚举或结构体中尝试使用自身作为成员（来试图构成递归类型）会导致报错。但使用 `Box<T>` 后其类型所占的空间就确定了。上例的 List 即通过 `Box<T>` 构成 cons list 这种递归类型。
 
 （注：很容易可以联想到单链表，然而使用 `Cons(i32, &List)` 会提示确少生命周期修饰符，使用 `Cons(i32, &'a List)` 则提示生命周期未定义，而 `enum List<'a>` 后则又开始提示确少生命周期修饰符。原因尚未搞懂）
+
+``` rust
+use std::ops::Deref;
+
+struct MyBox<T>(T);
+
+impl<T> MyBox<T> {
+    fn new(x: T) -> MyBox<T> {
+        MyBox(x)
+    }
+}
+
+impl<T> Deref for MyBox<T> {
+    type Target = T;
+
+    fn deref(&self) -> &T {
+        &self.0
+    }
+}
+
+fn hello(name: &str) {
+    println!("Hello, {}!", name);
+}
+
+fn main() {
+    let x = 5;
+    let y = MyBox::new(x);
+
+    assert_eq!(5, x);
+    assert_eq!(5, *y);
+    
+    let m = MyBox::new(String::from("Rust"));
+    hello(&m);
+    hello(&(*m)[..]); // 如果没有 解引用强制多态 特性，则上面这行需要这样写
+}
+```
+
+可以使用解引用符号（`*`）像普通指针一样访问智能指针的值本身。智能指针通过实现 `Deref` trait 实现解引用。
+
+当对智能指针使用解引用符号时，实际 Rust 在底层运行了 `*(y.deref())` 。
+
+**解引用强制多态**（deref coercions）即当尝试对智能指针使用 `&` 时（例如 `&MyBox<String>` ）， Rust 会将其转换为其原始类型的引用（即 `&String`）处理。当然这个过程可以是链式传递的，例如标准库中提供的 `String` 的 Deref 实现会返回字符串 slice （即 `&str`，使得 `&MyBox<String>` 可以被视作 `&str` 使用）。
+
+对于可变类型，有 `DerefMut` trait 对应。
