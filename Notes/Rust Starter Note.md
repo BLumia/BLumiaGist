@@ -1245,3 +1245,28 @@ fn main() {
 **解引用强制多态**（deref coercions）即当尝试对智能指针使用 `&` 时（例如 `&MyBox<String>` ）， Rust 会将其转换为其原始类型的引用（即 `&String`）处理。当然这个过程可以是链式传递的，例如标准库中提供的 `String` 的 Deref 实现会返回字符串 slice （即 `&str`，使得 `&MyBox<String>` 可以被视作 `&str` 使用）。
 
 对于可变类型，有 `DerefMut` trait 对应。
+
+``` rust
+struct CustomSmartPointer {
+    data: String,
+}
+
+impl Drop for CustomSmartPointer {
+    fn drop(&mut self) {
+        println!("Dropping CustomSmartPointer with data `{}`!", self.data);
+    }
+}
+
+fn main() {
+    let c = CustomSmartPointer { data: String::from("my stuff") };
+    let d = CustomSmartPointer { data: String::from("other stuff") };
+    drop(c);
+    println!("CustomSmartPointers created.");
+}
+```
+
+实现 `Drop` trait （提供了 `drop()`）以提供离开作用域时的析构功能。析构顺序和声明顺序相反。
+
+允许手动对某个变量进行提前析构，但不是执行其 `drop()` ，而应当使用 `std::mem::drop` （位于 prelude 中，故直接使用 `drop(xxx)` 即可）。
+
+（根据文章描述，析构应该是结束作用域时如果自身还有所有权的话就无论如何都会执行的，可能是有默认实现？而使用 `std::mem::drop` **大概** 会使其取得所有权而避免重复调用 `drop()` 造成重复释放内存）
