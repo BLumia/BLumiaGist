@@ -1270,3 +1270,29 @@ fn main() {
 允许手动对某个变量进行提前析构，但不是执行其 `drop()` ，而应当使用 `std::mem::drop` （位于 prelude 中，故直接使用 `drop(xxx)` 即可）。
 
 （根据文章描述，析构应该是结束作用域时如果自身还有所有权的话就无论如何都会执行的，可能是有默认实现？而使用 `std::mem::drop` **大概** 会使其取得所有权而避免重复调用 `drop()` 造成重复释放内存）
+
+``` rust
+enum List {
+    Cons(i32, Rc<List>),
+    Nil,
+}
+
+use List::{Cons, Nil};
+use std::rc::Rc;
+
+fn main() {
+    let a = Rc::new(Cons(5, Rc::new(Cons(10, Rc::new(Nil)))));
+    println!("count after creating a = {}", Rc::strong_count(&a));
+    let b = Cons(3, Rc::clone(&a));
+    println!("count after creating b = {}", Rc::strong_count(&a));
+    {
+        let c = Cons(4, a.clone()); // 也可以使用 a.clone() 代替 Rc::clone(&a)
+        println!("count after creating c = {}", Rc::strong_count(&a));
+    }
+    println!("count after c goes out of scope = {}", Rc::strong_count(&a));
+}
+```
+
+Rust 存在引用计数智能指针 `Rc<T>` （注：只能用于单线程场景）。其 `clone` 方法使得引用计数器加一，而不是产生一个新的拷贝。
+
+`Rc::strong_count` 记录了引用的数量。注意，得到的引用均为不可变引用。
