@@ -74,3 +74,5 @@ _暂时略过_
 尽管通常认为音程的稳定与不稳定是一个统一体，但还是要将音程分为两类。稳定的音程（包括自然形式的同度、三度、五度、六度和八度）称之为**协和音程**（consonant intervals），不稳定的音程（二度，七度，所有的增、减音程，以及纯四度）称之为**不和谐音程**（dissonant intervals）。
 
 协和音程亦可细分为**完全协和**（perfect consonances）和**不完全协和**（imperface consonances）。完全协和包括 P1, P5, P8，不完全协和包括 M3, m3, M6, m6。作曲家也就是通过不同类型的音程循环流通来构成音乐的运动。
+
+// 注：根据李重光的教材和维基百科的来源，纯四度[被认为属于完全协和音程](https://en.wikipedia.org/wiki/Consonance_and_dissonance#Consonance)，但在[共晓时期](https://zh.wikipedia.org/wiki/%E5%85%B1%E6%99%93%E6%97%B6%E6%9C%9F)时理论上被认为是不协和的音程。若认为其协和，则也没有纯四度转位（到纯五度后）稳定性不一致的矛盾了。
