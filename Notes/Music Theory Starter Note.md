@@ -76,3 +76,7 @@ _暂时略过_
 协和音程亦可细分为**完全协和**（perfect consonances）和**不完全协和**（imperface consonances）。完全协和包括 P1, P5, P8，不完全协和包括 M3, m3, M6, m6。作曲家也就是通过不同类型的音程循环流通来构成音乐的运动。
 
 // 注：根据李重光的教材和维基百科的来源，纯四度[被认为属于完全协和音程](https://en.wikipedia.org/wiki/Consonance_and_dissonance#Consonance)，但在[共晓时期](https://zh.wikipedia.org/wiki/%E5%85%B1%E6%99%93%E6%97%B6%E6%9C%9F)时理论上被认为是不协和的音程。若认为其协和，则也没有纯四度转位（到纯五度后）稳定性不一致的矛盾了。
+
+由级进到结束音的方式称之为**旋律终止**（melodic cadence）。级进也被称作**连续进行**（conjunct motion），对应有跳进，分为小跳（三度跳进）或大跳（四度或以上跳进），也被称作**分离进行**（disjunct motion）。
+
+跳进前后的级进变向，称之为**回补法则**（law of recovery）// 这个词并没能在搜索引擎简单的查到，可能是姿势不对？
