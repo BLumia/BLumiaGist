@@ -1296,3 +1296,74 @@ fn main() {
 Rust 存在引用计数智能指针 `Rc<T>` （注：只能用于单线程场景）。其 `clone` 方法使得引用计数器加一，而不是产生一个新的拷贝。
 
 `Rc::strong_count` 记录了引用的数量。注意，得到的引用均为不可变引用。
+
+``` rust
+// 不完整的示例代码，此段的完整相关代码请参阅：
+// https://github.com/rust-lang/book/blob/master/second-edition/src/ch15-05-interior-mutability.md
+mod tests {
+    use super::*;
+    use std::cell::RefCell;
+
+    struct MockMessenger {
+        sent_messages: RefCell<Vec<String>>, // 注意此处是 RefCell<T>
+    }
+
+    impl MockMessenger {
+        fn new() -> MockMessenger {
+            MockMessenger { sent_messages: RefCell::new(vec![]) }
+        }
+    }
+
+    impl Messenger for MockMessenger {
+        fn send(&self, message: &str) { // 此处的 self 是不可变引用，由于是实现 trait ，并没有办法修改 self 为可变。
+            self.sent_messages.borrow_mut().push(String::from(message)); // 可变借用
+        }
+    }
+
+    #[test]
+    fn it_sends_an_over_75_percent_warning_message() {
+        // --snip--
+
+        assert_eq!(mock_messenger.sent_messages.borrow().len(), 1);
+    }
+}
+```
+
+`RefCell<T>` 允许在运行时执行不可变（或可变）借用检查，使用 RefCell<T> 能够在外部值被认为是不可变的情况下修改内部值。
+
+其 `borrow` 方法返回 `Ref` 类型的智能指针，`borrow_mut` 方法返回 `RefMut` 类型的智能指针。
+
+`RefCell<T>` 记录当前有多少个活动的 `Ref` 和 `RefMut` 智能指针。每次调用 `borrow` ，`RefCell<T>` 将活动的不可变借用计数加一。当 `Ref` 值离开作用域时，不可变借用计数减一。像编译时借用规则一样，`RefCell<T>` 在任何时候只允许有多个不可变借用或一个可变借用。
+
+在不符合规则时会 `panic!` 。另外由于不是编译时进行的检查而是运行时，故有一定性能开销。
+
+``` rust
+#[derive(Debug)]
+enum List {
+    Cons(Rc<RefCell<i32>>, Rc<List>),
+    Nil,
+}
+
+use List::{Cons, Nil};
+use std::rc::Rc;
+use std::cell::RefCell;
+
+fn main() {
+    let value = Rc::new(RefCell::new(5));
+
+    let a = Rc::new(Cons(Rc::clone(&value), Rc::new(Nil)));
+
+    let b = Cons(Rc::new(RefCell::new(6)), Rc::clone(&a));
+    let c = Cons(Rc::new(RefCell::new(10)), Rc::clone(&a));
+
+    let mb1 = Rc::clone(&value); // 得到了一个新的所有者
+    *mb1.borrow_mut() += 10; // 并且可以修改其值
+    *value.borrow_mut() += 10; // 原值也可以
+
+    println!("a after = {:?}", a);
+    println!("b after = {:?}", b);
+    println!("c after = {:?}", c);
+}
+```
+
+结合 `Rc<T>` 和 `RefCell<T>` 就可以得到有多个所有者并且都可以通过它获得可变借用来修改其值。
