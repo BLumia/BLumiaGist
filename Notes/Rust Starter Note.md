@@ -1367,3 +1367,43 @@ fn main() {
 ```
 
 结合 `Rc<T>` 和 `RefCell<T>` 就可以得到有多个所有者并且都可以通过它获得可变借用来修改其值。
+
+当然，显然我们可以通过 `RefCell<Rc<List>>` 构造循环引用，并可能导致内存泄漏。
+
+``` rust
+use std::rc::{Rc, Weak};
+use std::cell::RefCell;
+
+#[derive(Debug)]
+struct Node {
+    value: i32,
+    parent: RefCell<Weak<Node>>,
+    children: RefCell<Vec<Rc<Node>>>,
+}
+
+fn main() {
+    let leaf = Rc::new(Node {
+        value: 3,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![]),
+    });
+
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
+
+    let branch = Rc::new(Node {
+        value: 5,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![Rc::clone(&leaf)]),
+    });
+
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
+}
+```
+
+我们并不总是需要强引用计数指针，例如树形结构时父子结点互相指向并不包含所有权的持有。子结点可以具有一个指向父节点的指针但并不需要强引用计数功能。 `Weak<T>` 则是我们需要的东西。
+
+`Rc::clone` 会增加 `Rc` 实例的 `strong_count`，`Rc` 实例只在其 `strong_count` 为 0 时才会被清理。而调用 `Rc::downgrade` 并传递 `Rc` 实例的引用即可创建其值的 **弱引用**（weak reference），一个 `Weak<T>` 类型的智能指针。调用 `Rc::downgrade` 会将 `weak_count` 加一，`Rc` 类型使用 `weak_count` 来记录其存在多少个 `Weak<T>` 引用，而 `Rc<T>` 内的资源释放依然仅当强引用计数为 0 时才进行，弱引用并不影响其资源释放。
+
+由于强引用计数为 0 时 `Weak<T>` 引用的值可能已经释放了，故使用 `Weak<T>` 的值时我们调用的 `Weak<T>` 实例的 `upgrade` 方法返回的是 `Option<Rc<T>>`。如果 `Rc` 值还未被丢弃则结果是 `Some`，已经被丢弃则结果是 `None`。由于是 `Option` ，故我们不必担心意外的处理了一个无效的指针。
