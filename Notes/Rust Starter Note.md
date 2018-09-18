@@ -1407,3 +1407,28 @@ fn main() {
 `Rc::clone` 会增加 `Rc` 实例的 `strong_count`，`Rc` 实例只在其 `strong_count` 为 0 时才会被清理。而调用 `Rc::downgrade` 并传递 `Rc` 实例的引用即可创建其值的 **弱引用**（weak reference），一个 `Weak<T>` 类型的智能指针。调用 `Rc::downgrade` 会将 `weak_count` 加一，`Rc` 类型使用 `weak_count` 来记录其存在多少个 `Weak<T>` 引用，而 `Rc<T>` 内的资源释放依然仅当强引用计数为 0 时才进行，弱引用并不影响其资源释放。
 
 由于强引用计数为 0 时 `Weak<T>` 引用的值可能已经释放了，故使用 `Weak<T>` 的值时我们调用的 `Weak<T>` 实例的 `upgrade` 方法返回的是 `Option<Rc<T>>`。如果 `Rc` 值还未被丢弃则结果是 `Some`，已经被丢弃则结果是 `None`。由于是 `Option` ，故我们不必担心意外的处理了一个无效的指针。
+
+``` rust
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    let handle = thread::spawn(|| {
+        for i in 1..10 {
+            println!("hi number {} from the spawned thread!", i);
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    for i in 1..5 {
+        println!("hi number {} from the main thread!", i);
+        thread::sleep(Duration::from_millis(1));
+    }
+
+    handle.join().unwrap(); // 尝试注释这行
+}
+```
+
+正如其它较底层的编程语言，Rust 标准库只提供了 1:1 线程模型实现。
+
+如果我们希望强制闭包获取其使用的环境值的所有权，可以在参数列表前使用 move 关键字。move 闭包经常与 `thread::spawn` 一起使用，因为它允许我们在一个线程中使用另一个线程的数据。
