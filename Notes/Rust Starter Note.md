@@ -1432,3 +1432,53 @@ fn main() {
 正如其它较底层的编程语言，Rust 标准库只提供了 1:1 线程模型实现。
 
 如果我们希望强制闭包获取其使用的环境值的所有权，可以在参数列表前使用 move 关键字。move 闭包经常与 `thread::spawn` 一起使用，因为它允许我们在一个线程中使用另一个线程的数据。
+
+``` rust
+use std::thread;
+use std::sync::mpsc;
+use std::time::Duration;
+
+fn main() {
+    let (tx, rx) = mpsc::channel();
+    
+    let tx1 = mpsc::Sender::clone(&tx);
+    thread::spawn(move || {
+        thread::sleep(Duration::from_secs(1));
+        let val = String::from("hi1");
+        tx1.send(val).unwrap();
+    });
+
+    thread::spawn(move || {
+        let vals = vec![
+            String::from("hi"),
+            String::from("from"),
+            String::from("the"),
+            String::from("thread"),
+        ];
+
+        for val in vals {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+    
+    let received = rx.recv().unwrap();
+    println!("Got1: {}", received);
+
+    for received in rx {
+        println!("Got2: {}", received);
+    }
+}
+```
+
+Rust 中一个实现（线程间）消息传递并发的主要工具是 **通道**（channel）。使用 `mpsc::channel` 函数创建一个新的通道；`mpsc` 是 **多个生产者，单个消费者** （multiple producer, single consumer）的缩写。即，Rust 标准库实现通道的方式意味着一个通道可以有多个产生值的 发送（sending）端，但只能有一个消费这些值的 接收（receiving）端。
+
+`mpsc::channel` 函数返回一个元组：第一个元素是发送端，而第二个元素是接收端。由于历史原因，tx 和 rx 通常作为 发送者（transmitter）和 接收者（receiver）的缩写。
+
+通道的发送端有一个 `send` 方法用来获取需要放入通道的值。send 方法返回一个 `Result<T, E>` 类型，所以如果接收端已经被丢弃了，将没有发送值的目标，所以发送操作会返回错误。另外， `send` 函数获取其参数的所有权并移动这个值归接收者所有。
+
+通道的接收端有两个有用的方法：`recv` 和 `try_recv`。 `recv` 是 receive 的缩写，会阻塞主线程执行直到从通道中接收一个值。一旦发送了一个值，`recv` 会在一个 `Result<T, E>` 中返回它。当通道发送端关闭，`recv` 会返回一个错误表明不会再有新的值到来了。 `try_recv` 不会阻塞，相反它立刻返回一个 `Result<T, E>` ：`Ok` 值包含可用的信息，而 `Err` 值代表此时没有任何消息。
+
+也可以不显式调用 `recv` 函数而是将 rx 当作一个迭代器。对于每一个接收到的值，我们将其打印出来。当通道被关闭时，迭代器也将结束。
+
+可以通过克隆通道的发送端做到“多个生产者”。
