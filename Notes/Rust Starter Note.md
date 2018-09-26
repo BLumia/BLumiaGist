@@ -1482,3 +1482,35 @@ Rust 中一个实现（线程间）消息传递并发的主要工具是 **通道
 也可以不显式调用 `recv` 函数而是将 rx 当作一个迭代器。对于每一个接收到的值，我们将其打印出来。当通道被关闭时，迭代器也将结束。
 
 可以通过克隆通道的发送端做到“多个生产者”。
+
+``` rust
+use std::sync::{Mutex, Arc};
+use std::thread;
+
+fn main() {
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
+
+    for _ in 0..10 {
+        let counter = Arc::clone(&counter);
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+
+            *num += 1;
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    println!("Result: {}", *counter.lock().unwrap());
+}
+```
+
+Rust 提供互斥器 `Mutex<T>` ，不同于 c++ 中常见的互斥锁实现，Rust 提供的互斥器持有一个变量，而不是作为一个独立的 guard （准确的说，`lock` 调用返回一个叫做 `MutexGuard` 的智能指针）。使用关联函数 `new` 来创建一个 `Mutex<T>`。使用 `lock` 方法获取锁，以访问互斥器中的数据。这个调用会阻塞当前线程，直到我们拥有锁为止。
+
+如果另一个线程拥有锁，并且那个线程 panic 了，则 lock 调用会失败。在这种情况下，没人能够再获取锁。可以使用 `unwrap` 在遇到这种情况时使线程简单的 panic。
+
+多线程操作时使用互斥锁防止多个线程同时访问同一数据，此时我们显然需要互斥器能够在多个现成中被访问。由于 `Rc<T>` 并非线程安全的，所以在多线程情况下应该使用线程安全的**原子引用计数**（atomically reference counted）类型 `Arc<T>` ，其具有和 `Rc<T>` 相同的 API 。
