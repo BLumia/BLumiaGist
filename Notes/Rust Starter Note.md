@@ -1524,3 +1524,62 @@ Rust 提供互斥器 `Mutex<T>` ，不同于 c++ 中常见的互斥锁实现，R
 `Send` trait 表明类型的所有权可以在线程间传递。几乎所有的 Rust 类型都是 `Send` 的，但明显存在例外：如 `Rc<T>` 并非是线程安全的，自然不能在线程间传递。任何完全由 `Send` 的类型组成的类型也会自动被标记为 `Send`。几乎所有基本类型都是 `Send` 的，除了后续将会讨论的裸指针（raw pointer）。
 
 `Sync` trait 表明类型可以安全的在多个线程中拥有其值的引用。对于任意类型 `T`，如果 `&T`（`T` 的引用）是 `Send` 的话 `T` 就是 `Sync` 的，这意味着其引用就可以安全的发送到另一个线程。类似于 `Send` 的情况，基本类型是 `Sync` 的，完全由 `Sync` 的类型组成的类型也是 `Sync` 的。`Rc<T>` 也不是 `Sync` 的，`RefCell<T>` 和 `Cell<T>` 也不是。
+
+``` rust
+# 非可编译的完整示例，仅为代码片段
+match VALUE {
+    PATTERN => EXPRESSION,
+    PATTERN => EXPRESSION,
+}
+
+let PATTERN = EXPRESSION; // 这个模式实际上等于 “将任何值绑定到变量 PATTERN，不管值是什么”
+
+for PATTERN in VALUE {
+    EXPRESSION;
+}
+
+let robot_name = Some(String::from("Bors"));
+match robot_name {
+    Some(ref name) => println!("Found a name: {}", name), // 如果不写 ref ，Some 中的值的所有权会被移走。下方的 println 也就不能再使用不再具有其所有权的值了。
+    None => (),
+}
+println!("robot_name is: {:?}", robot_name);
+
+let num = Some(4);
+match num {
+    Some(x) if x < 5 => println!("less than five: {}", x), // 匹配守护
+    Some(x) => println!("{}", x),
+    None => (),
+}
+
+let x = 4;
+let y = false;
+match x {
+    4 | 5 | 6 if y => println!("yes"), // 使用 `|` 的同时进行匹配守护
+    _ => println!("no"),
+}
+
+enum Message {
+    Hello { id: i32 },
+}
+
+let msg = Message::Hello { id: 5 };
+match msg {
+    Message::Hello { id: id_variable @ 3...7 } => { // 匹配 `id` 的值同时将 `id` 的值保存到 `id_variable` 中以供使用。当然此处 `id_variable` 也可以和模式同名。
+        println!("Found an id in range: {}", id_variable)
+    },
+    Message::Hello { id } => {
+        println!("Found some other id: {}", id)
+    },
+}
+```
+
+Rust 中诸多基本关键字语法使用了 **模式**（pattern）语法，类如 `match` 会根据值来匹配对应的模式以执行不同的分支。但实际使用模式的不只是看上去的 `match`, `if let`, ` while let`, 还包括 `for`, `let` 以及函数参数等。
+
+类如 `let x = 5` 这样的模式是 **不可反驳的** （irrefutable），因为 `x` 可以匹配任何值所以不可能失败。而 `if let Some(x) = a_value` 则是 **可反驳的** （refutable），比如 `a_value` 是 `None` 的时候就失败了。let 语句、 函数参数和 for 循环只能接受不可反驳的模式，因为通过不匹配的值程序无法进行有意义的工作。if let 和 while let 表达式被限制为只能接受可反驳的模式，因为根据定义他们意在处理可能的失败 —— 条件表达式的功能就是根据成功或失败执行不同的操作。理解这两种模式的意义是 —— 看懂对应情况的报错。
+
+在模式匹配中 `&` 符号会匹配引用而不是创建引用，故当需要创建引用时，我们应该使用 `ref` （对应 `&`）和 `ref mut` （对应 `&mut`）。
+
+匹配守卫（match guard）是一个指定与 match 分支模式之后的额外 if 条件，它也必须被满足才能选择此分支。匹配守护作用于前面对应的整个模式。例如上方使用了或运算符的例子中，匹配守护作用域 `4 | 5 | 6` 这整个模式。
+
+at 运算符 `@` 允许我们在创建一个存放值的变量的同时测试其值是否匹配模式。使用 `@` 可以在一个模式中同时测试和保存变量值。
