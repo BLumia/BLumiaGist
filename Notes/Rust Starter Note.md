@@ -1583,3 +1583,63 @@ Rust 中诸多基本关键字语法使用了 **模式**（pattern）语法，类
 匹配守卫（match guard）是一个指定与 match 分支模式之后的额外 if 条件，它也必须被满足才能选择此分支。匹配守护作用于前面对应的整个模式。例如上方使用了或运算符的例子中，匹配守护作用域 `4 | 5 | 6` 这整个模式。
 
 at 运算符 `@` 允许我们在创建一个存放值的变量的同时测试其值是否匹配模式。使用 `@` 可以在一个模式中同时测试和保存变量值。
+
+``` rust
+use std::slice;
+
+extern "C" { // 外部（这里是来自 C 语言的）函数
+    fn abs(input: i32) -> i32;
+}
+
+#[no_mangle]
+pub extern "C" fn call_from_c() {
+    println!("Just called a Rust function from C!");
+}
+
+fn split_at_mut(slice: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) { // 这个函数是安全的
+    let len = slice.len();
+    let ptr = slice.as_mut_ptr();
+
+    assert!(mid <= len);
+
+    unsafe {
+        (slice::from_raw_parts_mut(ptr, mid), // slice::from_raw_parts_mut 函数获取一个裸指针和一个长度来创建一个 slice
+         slice::from_raw_parts_mut(ptr.offset(mid as isize), len - mid)) // slice::from_raw_parts_mut 是不安全的，所以需要 unsafe
+    }
+}
+
+fn main() {
+    unsafe {
+        println!("Absolute value of -3 according to C: {}", abs(-3)); // 使用外部函数总是不安全的，故需要 unsafe
+    }
+
+    let mut num = 5;
+    let r1 = &num as *const i32; // 可以在安全的代码中创建裸指针
+    let r2 = &mut num as *mut i32; // 但不能进行解引用操作
+    
+    unsafe {
+        println!("r1 is: {}", *r1); // 在不安全的代码中对裸指针进行解引用
+        println!("r2 is: {}", *r2);
+    }
+
+	let mut v = vec![1, 2, 3, 4, 5, 6];
+	let r = &mut v[..];
+	let (a, b) = split_at_mut(r, 3);
+
+	assert_eq!(a, &mut [1, 2, 3]);
+	assert_eq!(b, &mut [4, 5, 6]);
+}
+```
+
+Rust 允许使用 `unsafe` 关键字标记某段代码 / 函数 / trait 是不安全的， `unsafe` 允许以下四种行为，并需要程序员自身来保证 `unsafe` 代码的安全性：
+
+ - 解引用裸指针
+ - 调用不安全的函数或方法
+ - 访问或修改可变静态变量
+ - 实现不安全 trait
+
+如 C 或 C++ 中的（非智能）指针，裸指针可以为空，也不能保证指向的内存一定有效，也不能实现任何自动清理功能。因为是裸指针，也就无法应用借用规则了。故尽管 Rust 允许在安全的代码中创建裸指针（创建是安全的，不会产生问题，而使用裸指针则可能产生问题），但若需要使用裸指针（对其解引用以访问其值）则需要在 `unsafe` 的代码内做。
+
+我们可以把函数，方法，以及 trait 声明为不安全的，而当使用或实现它们时则必须也标明 unsafe （对于使用函数，应在 unsafe 块内使用，对于实现 unsafe trait，则实现也应标记为 unsafe ）。一个安全的函数中可以包含 unsafe 块，可以以此创建不安全代码的安全抽象。
+
+使用 `extern` 关键字来创建和使用 **外部函数接口** （Foreign Function Interface， FFI），当使用外部函数接口时，这些接口总是 unsafe 的（因为 Rust 没法检查它们），而创建的接口则是安全的。不过，创建的外部接口需要注明 `#[no_mangle]` 以阻止 Rust 对函数名进行 name mangling。
