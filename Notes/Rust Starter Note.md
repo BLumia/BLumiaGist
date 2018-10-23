@@ -1643,3 +1643,26 @@ Rust 允许使用 `unsafe` 关键字标记某段代码 / 函数 / trait 是不�
 我们可以把函数，方法，以及 trait 声明为不安全的，而当使用或实现它们时则必须也标明 unsafe （对于使用函数，应在 unsafe 块内使用，对于实现 unsafe trait，则实现也应标记为 unsafe ）。一个安全的函数中可以包含 unsafe 块，可以以此创建不安全代码的安全抽象。
 
 使用 `extern` 关键字来创建和使用 **外部函数接口** （Foreign Function Interface， FFI），当使用外部函数接口时，这些接口总是 unsafe 的（因为 Rust 没法检查它们），而创建的接口则是安全的。不过，创建的外部接口需要注明 `#[no_mangle]` 以阻止 Rust 对函数名进行 name mangling。
+
+``` rust
+static mut COUNTER: u32 = 0;
+
+fn add_to_count(inc: u32) {
+    unsafe {
+        COUNTER += inc;
+    }
+}
+
+fn main() {
+    add_to_count(3);
+    unsafe {
+        println!("COUNTER: {}", COUNTER);
+    }
+}
+```
+
+全局变量在 Rust 中被称为 静态（static）变量，因而具有的是 `'static` 生命周期。静态变量是一个变量，访问时是（总是同一）地址指向的值，而常量则是固定值。
+
+对于静态变量，必须标注变量的类型。
+
+静态变量可以是可变的，拥有可以全局访问的可变数据，难以保证不存在数据竞争，因而访问和修改可变静态变量都是不安全的。
