@@ -1683,3 +1683,78 @@ trait 对象的生命周期自动推断规则是：
  - 如果有多个类似 T: 'a 的从句，则没有默认生命周期；必须明确指定。
 
 当必须明确指定时，可以为像 `Box<Red>` 这样的 trait 对象增加生命周期 bound，根据需要使用语法 `Box<Foo + 'a>` 或 `Box<Foo + 'static>`。 // 等等，不是冒号吗？
+
+``` rust
+// 代码片段
+pub trait Iterator {
+    type Item;
+    fn next(&mut self) -> Option<Self::Item>;
+}
+
+impl Iterator for Counter {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // --snip--
+
+// --------------------------
+pub trait Iterator<T> { // 上面的 trait 类似这种写法，但不需要每次使用都声明 T 的具体类型
+    fn next(&mut self) -> Option<T>;
+}
+// --------------------------
+// Add trait 的原型
+trait Add<RHS=Self> {
+    type Output;
+
+    fn add(self, rhs: RHS) -> Self::Output;
+}
+// 可以编译的例子
+fn main() {
+use std::ops::Add;
+
+struct Millimeters(u32);
+struct Meters(u32);
+
+impl Add<Meters> for Millimeters {
+    type Output = Millimeters; // 实现时进行类型关联，调用时就不必了
+
+    fn add(self, other: Meters) -> Self::Output {
+        Millimeters(self.0 + (other.0 * 1000))
+    }
+}
+}
+```
+
+可以使用 `type` 关键字声明 **关联类型** （associated types），这种写法可以避免调用时不必要的类型声明。
+
+上面 `Add` trait 的例子中使用了默认类型。除了作为默认这一本身的作用之外还可以做来扩展类型而不破坏现有代码。
+
+Rust 不允许进行直接的类型重载，但可以通过实现指定 trait 来达到重载的目的。例如上面例子中的 `Add` trait。
+
+``` rust
+trait Animal {
+    fn baby_name() -> String;
+}
+
+struct Dog;
+
+impl Dog {
+    fn baby_name() -> String { // 如果直接使用 Dog::baby_name() 则会调用这个关联函数
+        String::from("Spot")
+    }
+}
+
+impl Animal for Dog { // 为 Dog 实现 Animal trait
+    fn baby_name() -> String { // 是关联函数（静态函数）而不是方法（成员函数）
+        String::from("puppy")
+    }
+}
+
+fn main() {
+    println!("A baby dog is called a {}", <Dog as Animal>::baby_name()); // 完全限定语法
+}
+```
+
+一个类型存在某个函数，某个 trait 存在同名的函数，此时依然可以为这个类型实现这个 trait ，只需指明所要调用的函数即可。但有时 Rust 无法计算出所要调用的是哪个实现。
+
+上例中有一个 `Animal` trait，可以为类型 `Dog` 实现 `Animal` trait 中的 `baby_name()`，但 `Dog` 本身也有一个同名关联函数，故如果使用 `Dog::baby_name()` 则会调用 `Dog` 本身的实现，而若想调用 `Dog` 所实现的 `Animal` trait 中的实现却不能直接使用 `Animal::baby_name()` —— 因为 `Animal` 是 trait 而不是具体实现，又由于这是关联函数而不是方法，故没有 `self` 参数可供推断，所以这样调用无法计算出所希望使用的实现。使用 **完全限定语法** 即可消除这歧义。注意，不能使用 `Animal::baby_name()` 存粹是因为无法计算出所希望使用的实现，而不是因为 `Dog` 所具有的同名函数的存在 —— 即便同名函数不存在，也只能通过 `Dog::baby_name()` 调用， `Dog` 具体到了某个实现，而 `Animal` 没有。
