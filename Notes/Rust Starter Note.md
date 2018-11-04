@@ -1758,3 +1758,48 @@ fn main() {
 一个类型存在某个函数，某个 trait 存在同名的函数，此时依然可以为这个类型实现这个 trait ，只需指明所要调用的函数即可。但有时 Rust 无法计算出所要调用的是哪个实现。
 
 上例中有一个 `Animal` trait，可以为类型 `Dog` 实现 `Animal` trait 中的 `baby_name()`，但 `Dog` 本身也有一个同名关联函数，故如果使用 `Dog::baby_name()` 则会调用 `Dog` 本身的实现，而若想调用 `Dog` 所实现的 `Animal` trait 中的实现却不能直接使用 `Animal::baby_name()` —— 因为 `Animal` 是 trait 而不是具体实现，又由于这是关联函数而不是方法，故没有 `self` 参数可供推断，所以这样调用无法计算出所希望使用的实现。使用 **完全限定语法** 即可消除这歧义。注意，不能使用 `Animal::baby_name()` 存粹是因为无法计算出所希望使用的实现，而不是因为 `Dog` 所具有的同名函数的存在 —— 即便同名函数不存在，也只能通过 `Dog::baby_name()` 调用， `Dog` 具体到了某个实现，而 `Animal` 没有。
+
+``` rust
+#![allow(unused_variables)]
+fn main() {
+    type Kilometers = i32;
+    // type Result<T> = Result<T, std::io::Error>; // 进一步的用法
+    // struct Wrapper(i32); // newtype 模式，使用没有名称的元组结构体作为 Wrapper 创建新类型
+
+    let x: i32 = 5;
+    let y: Kilometers = 5;
+
+    println!("x + y = {}", x + y);
+}
+```
+
+可以使用 `type` 创建 **类型别名** （type alias），别名将会和原名一同看待而不会当作新类型。若需要看作不同的类型看待，则应该使用被称作为 “newtype pattern” 的模式。
+
+newtype 模式允许我们绕过 **孤儿规则**（orphan rule，即不允许对外部类型实现外部 trait。例如，不能在 `Vec` 上实现 `Display` trait，因为 `Display` 和 `Vec` 都定义于标准库中），给创造的新类型实现 trait。
+
+``` rust
+// 不能编译的代码片段
+fn bar() -> ! {
+    // --snip--
+}
+
+// 来自最初 猜猜看 的片段
+let guess: u32 = match guess.trim().parse() {
+    Ok(num) => num,
+    Err(_) => continue,
+};
+
+// fn generic<T>(t: T) { //实际会被处理成：
+// fn generic<T: Sized>(t: T) { // 若希望放宽这种限制，则需要： 
+fn generic<T: ?Sized>(t: &T) {
+    // --snip--
+}
+```
+
+`!` 类型被称为 never type （在类型理论中被称为 empty type）。never type 可以强转为任何其他类型。例如在 `match` 中，`continue` 就是 never type，其不返回任何类型，而是交给外层循环逻辑处理。`panic!` 宏和 `loop` 表达式也都具有 `!` 类型。
+
+**动态大小类型** （dynamically sized types，有时被称为 “DST” 或 “unsized types”）允许我们处理只有在运行时才知道大小的类型，例如 `str` （不是 `&str`）是一个 DST。Rust 需要知道应该为特定类型的值分配多少内存，故当我们使用 `str` 时使用的是 `&str` slice，其储存了开始位置和 slice 的长度。这是 Rust 中动态大小类型的常规用法：他们有一些额外的元信息来储存动态信息的大小。这引出了动态大小类型的黄金规则：必须将动态大小类型的值置于某种指针之后。
+
+可以将 `str` 与所有类型的指针结合：比如 `Box<str>` 或 `Rc<str>`。而 `trait` 实际也是 DST，每一个 trait 都是一个可以通过 trait 名称来引用的动态大小类型。为了将 trait 用于 trait 对象，必须将他们放入指针之后，比如 &Trait 或 Box<Trait>（Rc<Trait> 也可以）。
+
+而为了处理 DST，Rust 有一个特定的 trait ，即 `Sized` trait 来决定一个类型的大小是否在编译时可知。这个 trait 自动为编译器在编译时就知道大小的类型实现，且 Rust 隐式的为每一个泛型函数增加了 Sized bound。
