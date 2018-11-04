@@ -1803,3 +1803,29 @@ fn generic<T: ?Sized>(t: &T) {
 可以将 `str` 与所有类型的指针结合：比如 `Box<str>` 或 `Rc<str>`。而 `trait` 实际也是 DST，每一个 trait 都是一个可以通过 trait 名称来引用的动态大小类型。为了将 trait 用于 trait 对象，必须将他们放入指针之后，比如 &Trait 或 Box<Trait>（Rc<Trait> 也可以）。
 
 而为了处理 DST，Rust 有一个特定的 trait ，即 `Sized` trait 来决定一个类型的大小是否在编译时可知。这个 trait 自动为编译器在编译时就知道大小的类型实现，且 Rust 隐式的为每一个泛型函数增加了 Sized bound。
+
+``` rust
+fn add_one(x: i32) -> i32 {
+    x + 1
+}
+
+fn do_twice(f: fn(i32) -> i32, arg: i32) -> i32 {
+    f(arg) + f(arg)
+}
+
+fn returns_closure() -> Box<Fn(i32) -> i32> {
+    Box::new(|x| x + 1)
+}
+
+fn main() {
+    let answer = do_twice(add_one, 5);
+
+    println!("The answer is: {}", answer);
+}
+```
+
+函数的类型是 fn，使用小写的 “f” 以便不与 Fn 闭包 trait 向混淆。fn 被称为 **函数指针**（function pointer）。`fn` 是一个类型而不是一个 trait，所以直接指定 `fn` 作为参数而不是声明一个带有 `Fn` 作为 trait bound 的泛型参数。
+
+函数指针实现了所有三个闭包 trait（Fn、FnMut 和 FnOnce），所以总是可以在调用期望闭包的函数时传递函数指针作为参数。
+
+由于闭包表现为 trait （`Fn`），而 `trait` 是 DST，故当我们需要返回闭包时，应该把它放到智能指针中。
