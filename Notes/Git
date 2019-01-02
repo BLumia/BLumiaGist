@@ -1,3 +1,8 @@
- 推送本地master分支到远程coding-pages分支 git push origin master:coding-pages
- 删除远程coding-pages分支git push origin :coding-pages
- 
+推送本地 master 分支到远程 <remotebranchname> 分支:
+git push origin master:<remotebranchname>
+
+删除远程 <remotebranchname> 分支:
+git push origin :coding-pages
+
+推送指定 <commit SHA> 的记录到指定 <remotebranchname> 分支
+git push <remotename> <commit SHA>:<remotebranchname>
