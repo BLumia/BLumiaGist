@@ -6,3 +6,6 @@ git push origin :coding-pages
 
 推送指定 <commit SHA> 的记录到指定 <remotebranchname> 分支
 git push <remotename> <commit SHA>:<remotebranchname>
+
+回退从 <older commit SHA> 到 <newer commit SHA> 范围的记录的状态到当前工作区
+git revert -n <older commit SHA>^..<newer commit SHA>
