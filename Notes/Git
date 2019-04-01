@@ -9,3 +9,15 @@ git push <remotename> <commit SHA>:<remotebranchname>
 
 回退从 <older commit SHA> 到 <newer commit SHA> 范围的记录的状态到当前工作区
 git revert -n <older commit SHA>^..<newer commit SHA>
+
+在远程版本库创建了一个分支后，在本地创建远程追踪分支
+git remote update
+
+在远程删除若干分支后，在本地删除这些已经失效的远程追踪分支
+git remote prune <remotename>
+
+查看已暂存的变动内容
+git diff --cached
+
+获取 <remotename> 上的 tag 信息
+git fetch <remotename> --tags
