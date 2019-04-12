@@ -21,3 +21,11 @@ git diff --cached
 
 获取 <remotename> 上的 tag 信息
 git fetch <remotename> --tags
+
+GitHub 下载 Pull Request 为 patch/diff 文件
+https://github.com/<user>/<repo>/pull/<id>.patch
+https://github.com/<user>/<repo>/pull/<id>.diff
+
+拉取 GitHub Pull Request 到本地 (假设 GitHub 即 origin)
+git pull origin pull/<id>/head
+git fetch origin pull/<id>/head:PR # 拉取到新的叫 PR 的分支
