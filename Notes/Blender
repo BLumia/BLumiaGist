@@ -3,4 +3,13 @@
  - 移动 3d 光标：
 Shift+S 打开 Snap 环形菜单会有调整光标位置的相关选项。另在 3d 光标模式下（左侧模式选中 3d 光标图标）可以直接拖动 3d 光标来移动位置。
  - 切换各种编辑模式：
-Tab 切换 Edit 和 Object 模式，Shift+Tab 打开 Mode 环形菜单以变选择所有可供切换的模式。
+Tab 切换 Edit 和 Object 模式，Ctrl+Tab 打开 Mode 环形菜单以变选择所有可供切换的模式。部分情况可能没有环形菜单，比如在选中骨骼时，Ctrl+Tab 会切换 Pose 模式，Tab 会切换 Edit 模式。
+ - 切换渲染/着色模式：
+按 Z 打开 Shadings 环形菜单，Shift+Z 在网格（wireframe）模式和 Solid 模式中切换
+ - 禁止选中
+在 Outliner 中点击相关图标即可，对于需要同时禁用子物体的情况，按住 Shift 并点击。
+ - 顶点，边缘，面的相关快捷菜单
+Ctrl+V(ertix)/E(dge)/F(ace)，或者直接右键菜单。
+ - UV 展开和贴图
+编辑模式直接全选然后在 UV Editor 视图就能看到自动生成的 UV 展开图了，若需手动标记接缝，选中对应的边后在边缘菜单（Ctrl+E）里 Mark Seam，然后按 U 打开 UV Mapping 菜单，选择 Unwrap 展开。
+在 UV Editor 中直接打开图片不会自动使得物体本身具备此贴图材质，所以需要在材质选项中，在 Base Color 中选择图片纹理（Image Texture）然后选择和 UV Editor 中打开的对应的贴图图片。
