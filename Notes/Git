@@ -29,3 +29,7 @@ https://github.com/<user>/<repo>/pull/<id>.diff
 拉取 GitHub Pull Request 到本地 (假设 GitHub 即 origin)
 git pull origin pull/<id>/head
 git fetch origin pull/<id>/head:PR # 拉取到新的叫 PR 的分支
+
+拉取 GitLab Merge Request 到本地 (假设 GitLab 即 origin)
+git pull origin merge-requests/<id>/head
+git fetch origin merge-requests/<id>/head:PR # 拉取到新的叫 PR 的分支
