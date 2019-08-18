@@ -33,3 +33,15 @@ git fetch origin pull/<id>/head:PR # 拉取到新的叫 PR 的分支
 拉取 GitLab Merge Request 到本地 (假设 GitLab 即 origin)
 git pull origin merge-requests/<id>/head
 git fetch origin merge-requests/<id>/head:PR # 拉取到新的叫 PR 的分支
+
+查找被误删的 commit 或分支，以变恢复
+git reflog
+
+当 reflog 都无法找到提交相关的数据时
+git fsck --unreachable --no-reflog # 试图检索 unreachable 的提交数据，但略过 reflog 可以显示的内容
+git fsck --dangling --no-reflog # 试图检索 dangling 的提交数据，但略过 reflog 可以显示的内容
+unreachable 和 dangling 的含义和区别参阅 git 文档。
+Pro Git 中关于 Git 数据维护和恢复的章节：https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery
+
+清理无用数据（比如 unreachable 的 commit）
+git gc
