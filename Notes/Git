@@ -1,3 +1,8 @@
+从 <commit SHA> 创建一个新分支 branch-name
+git branch branch-name <commit SHA> # 这个操作【不会改变】当前工作区和头指针 HEAD
+git checkout -b branch-name <commit SHA> # 这个会使当前工作区以及 HEAD 都变动到新分支上
+// 查前者的需求是想在不变动工作区/切出去的情况下 cherry-pick 当前分支的某个 commit 到另一个分支，但好像不能..
+
 推送本地 master 分支到远程 <remotebranchname> 分支:
 git push origin master:<remotebranchname>
 
@@ -30,7 +35,7 @@ https://github.com/<user>/<repo>/pull/<id>.diff
 git pull origin pull/<id>/head
 git fetch origin pull/<id>/head:PR # 拉取到新的叫 PR 的分支
 
-拉取 GitLab Merge Request 到本地 (假设 GitLab 即 origin)
+拉取 GitLab Merge Request 到本地 (假设 GitLab 即 origin) ([git alias](https://gitlab.com/help/user/project/merge_requests/index.md#checkout-locally-by-adding-a-git-alias))
 git pull origin merge-requests/<id>/head
 git fetch origin merge-requests/<id>/head:PR # 拉取到新的叫 PR 的分支
 
@@ -45,3 +50,11 @@ Pro Git 中关于 Git 数据维护和恢复的章节：https://git-scm.com/book/
 
 清理无用数据（比如 unreachable 的 commit）
 git gc
+
+二分查找定位是哪个 commit 引入了 bug
+git bisect start # 开始标记，会帮助记录你当前位置，以便 reset 时回到初始状态
+git bisect good <没 bug 的 SHA>
+git bisect bad <有 bug 的 SHA> # 这时位置应是两个 SHA 中间
+这时确认当前位置的状态有没有 bug ，有就执行 git bisect bad ，没有就 good ，就会继续到下一个二分区间继续查找，直到定位到 bug 的 SHA 即可
+git bisect reset 结束，重置回初始状态。
+
