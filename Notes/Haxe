@@ -4,5 +4,16 @@ Haxe 是一个强类型的高级现代化编程语言，Haxe 工具库是一套�
 
 Lime : https://lime.software/
 
-Lime 是个灵活而轻量的，提供应用生命周期管理，访问绘图，声音等相关功能的跨平台库。Lime 不提供渲染组件，但暴露所选渲染方式（Cario/Canvas/DOM/Flash/GL）和当前上下文以供开发者实际使用。
+Lime 是个灵活而轻量的，提供窗口创建销毁，输入处理，事件处理，音频访问，网络访问，媒体资源管理和渲染上下文的跨平台库。但注意 Lime 不提供实际渲染实现，只暴露所选渲染方式（Cario/Canvas/DOM/Flash/GL）和当前上下文以供开发者实际使用。
 
+OpenFL : https://www.openfl.org/
+
+OpenFL 就是在 lime 之上的一个库，提供了和 flash 的 API 很相似的一套接口。
+
+HaxeFlixel : https://haxeflixel.com/
+
+flixel 本身是 ActionScript3 的基于 Flash 的游戏开发库，HaxeFlixel 则是 haxe 的基于 OpenFL 的游戏开发库。
+
+Neko : https://nekovm.org/
+
+Neko 是个可被用作嵌入式脚本语言的高阶动态类型编程语言。可以轻松的使用 C 库扩展语言，可以编写从自己的语言到 neko 的生成工具以变使用 Neko 运行时来编译、运行和访问已有的库。这玩意儿作用上和 Lua 比较像。
