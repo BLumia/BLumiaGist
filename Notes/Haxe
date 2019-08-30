@@ -2,9 +2,22 @@ Haxe : https://haxe.org/
 
 Haxe 是一个强类型的高级现代化编程语言，Haxe 工具库是一套跨平台工具库，包含交叉编译工具，完全跨平台的标准库和访问各个平台原生特性的方式，以及包管理之类的其它周边特性。
 
+Windows 而言安装直接装安装包就是了，完事儿环境变量会自己加好，然后也就能用 haxelib 命令了。
+
+haxelib install <包名> 会把包装到 HaxeToolkit/haxe/lib 下，嫌下载慢也可以手动下然后把下载到的文件丢到这个目录然后再执行 haxelib install <包名> ，或者直接 haxelib install 后面跟实际下载到的压缩文件。
+
+另见 https://lib.haxe.org/documentation/using-haxelib/
+
 Lime : https://lime.software/
 
 Lime 是个灵活而轻量的，提供窗口创建销毁，输入处理，事件处理，音频访问，网络访问，媒体资源管理和渲染上下文的跨平台库。但注意 Lime 不提供实际渲染实现，只暴露所选渲染方式（Cario/Canvas/DOM/Flash/GL）和当前上下文以供开发者实际使用。
+
+haxelib install lime
+haxelib run lime setup
+
+然后就可以用 lime 命令了。可以试着用 lime create SimpleImage 在当前工作目录创建一个简单示例看看 lime 作用。
+
+另见 https://lime.software/docs/home/
 
 OpenFL : https://www.openfl.org/
 
@@ -14,6 +27,16 @@ HaxeFlixel : https://haxeflixel.com/
 
 flixel 本身是 ActionScript3 的基于 Flash 的游戏开发库，HaxeFlixel 则是 haxe 的基于 OpenFL 的游戏开发库。
 
+haxelib run lime setup flixel
+haxelib install flixel-tools
+haxelib run flixel-tools setup
+
+安装 flixel 和 flixel 命令（在 tools 里）后即可使用了，通过 flixel tpl -n "HelloWorld" 可以从模板创建项目供测试，html5 和 Neko 的 target 是开箱即用的，其它的需要额外配置。
+
+另见 http://haxeflixel.com/documentation/getting-started/
+
 Neko : https://nekovm.org/
 
 Neko 是个可被用作嵌入式脚本语言的高阶动态类型编程语言。可以轻松的使用 C 库扩展语言，可以编写从自己的语言到 neko 的生成工具以变使用 Neko 运行时来编译、运行和访问已有的库。这玩意儿作用上和 Lua 比较像。
+
+不过对于 Haxe 全家桶玩家而言 Neko 只是一个可用的 target 而已（
