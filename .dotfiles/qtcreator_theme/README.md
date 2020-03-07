@@ -1,4 +1,4 @@
-Theme file located at `~/.config/QtProject/qtcreator/styles`.
+Theme file located at `~/.config/QtProject/qtcreator/styles`, or `{QT_INSTALL_DIR}\Tools\QtCreator\share\qtcreator\styles` under Windows.
 
 ## List of Themes
 
