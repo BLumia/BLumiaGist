@@ -1,0 +1,48 @@
+digraph G {
+// Released under CC-0 License (Public Domain)
+
+//     compound=true;
+    
+    subgraph cluster_dtk_tier_1 {
+        node [style=filled];
+
+        dtkwidget5 -> dtkcore5;
+        dtkgui5 -> dtkcore5;
+        qt5integration -> dtkwidget5;
+        qt5integration -> dtkgui5;
+        qt5integration -> qt5dxcbplugin;
+        qt5integration -> dtkcore5;
+        dtkwidget5 -> libdframeworkdbus;
+        dde_network_utils -> libdframeworkdbus;
+        dtkwm -> dtkcore5;
+        
+        label = "DTK";
+    }
+    
+    subgraph cluster_utils_tier_1 {
+        gio_qt;
+        udisks2_qt5;
+        disomaster;
+        
+        label = "Standalone Utils";
+    }
+    
+    subgraph cluster_syscore_tier_1 {
+        startdde -> dde_api;
+        startdde -> deepin_desktop_schemas;
+        dde_daemon -> dde_api;
+        dde_daemon -> deepin_desktop_schemas;
+        
+        label = "DDE System Core";
+    }
+    
+    dde_polkit_agent -> libdframeworkdbus
+    dde_polkit_agent -> dtkcore5
+    dde_polkit_agent -> dtkgui5
+    dde_polkit_agent -> dtkwidget5
+//     dde_file_manager -> dtkwidget5 [lhead=cluster_dtk_tier_1];
+//     dde_file_manager -> udisks2_qt5 [lhead=cluster_utils_tier_1];
+//     dde_control_center -> dtkwidget5;
+//     dde_control_center -> dde_network_utils;
+//     dde_control_center -> dde_api;
+}
