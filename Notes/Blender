@@ -19,3 +19,21 @@ Ctrl+V(ertix)/E(dge)/F(ace)，或者直接右键菜单。
  - UV 展开和贴图
 编辑模式直接全选然后在 UV Editor 视图就能看到自动生成的 UV 展开图了，若需手动标记接缝，选中对应的边后在边缘菜单（Ctrl+E）里 Mark Seam，然后按 U 打开 UV Mapping 菜单，选择 Unwrap 展开。
 在 UV Editor 中直接打开图片不会自动使得物体本身具备此贴图材质，所以需要在材质选项中，在 Base Color 中选择图片纹理（Image Texture）然后选择和 UV Editor 中打开的对应的贴图图片。
+ - 应用
+Ctrl+A 打开应用菜单。对物体操作进行的各种变换（位移，缩放，旋转等）需要经过此操作来使其应用到物体的自身数据，此操作应当在对骨骼生成rig【前】进行。
+ - 常用操作
+贴靠（Snap）：按住Ctrl
+环形选择（Loop Select）：Alt+点击
+根据选中的边/点创建面：F
+分割（Rip，撕裂）所选的点/边，并移动分割后的边：V
+连接（Bridge，桥接）所创建的两个环形边缘：Ctrl+E > Bridge Edge Loop
+连接（Connect）所选的点：J（join）
+合并（Merge）所选的点：Alt+M
+调整轴心点（Pivot point）：（大键盘 .）
+ - 实用的插件
+[内附] Rigging: Rigify 提供了一些骨骼模板
+Mesh: Auto Mirror 提供了设置镜像操作的快捷入口（在n panel）
+Object: Bool Tools 提供了快速布尔操作的方式（在n panel）
+[非内附] Screencast Key 或 Shortcut VUr 提供了按键操作的屏显。前者曾为旧版 blender 内附的插件
+ - 实用的设置
+编辑模式下，右上角可以启用自动合并顶点的功能
