@@ -34,10 +34,14 @@ https://github.com/<user>/<repo>/pull/<id>.diff
 拉取 GitHub Pull Request 到本地 (假设 GitHub 即 origin)
 git pull origin pull/<id>/head
 git fetch origin pull/<id>/head:PR # 拉取到新的叫 PR 的分支
+对应的 [alias] 配置
+  pr = !sh -c 'git fetch $1 pull/$2/head:pr-$1-$2 && git checkout pr-$1-$2' -
 
 拉取 GitLab Merge Request 到本地 (假设 GitLab 即 origin) ([git alias](https://gitlab.com/help/user/project/merge_requests/index.md#checkout-locally-by-adding-a-git-alias))
 git pull origin merge-requests/<id>/head
 git fetch origin merge-requests/<id>/head:PR # 拉取到新的叫 PR 的分支
+对应的 [alias] 配置
+  mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
 
 查找被误删的 commit 或分支，以变恢复
 git reflog
