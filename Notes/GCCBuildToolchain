@@ -1,9 +1,0 @@
-// Answered by @Chirs241097
-Q: Linux下 不论什么发行版 不论什么目录结构 编译一个有完整build系统的东西都只需要./configure && make或者cmake && make的原因是什么？比如说 有的发行版中 libfoo在/lib里面 有的发行版在/use/lib里面 有的发行版在/use/lib/<arch>-<platform>/里面 而工程文件只需要写它需要什么库 它所用的build system本身也不知道这个库在哪里 所以它是怎么做到的？
-A: 给 pkg-config 或者它的同类 一个包名，他会从指定的位置读出引入这个包需要添加的include path、library path和library name
-它有一个专门的目录存放这些东西，里面有一堆.pc文件（pkg-config的情况），然后这个.pc文件是在编译每个库的时候生成的 比如你的安装路径是/usr 那include prefix就是/usr/include之类
-发行版的维护者决定安装路径。。然后对应的.pc文件就会生成 编译系统就能从它这里获取到关于这个包的信息了。
-当然，关于工具链的问题 也是一部分
-但是因为问的是Linux。一般发行版下面工具链都是单一的（x86_64/i386/i686这种情况可以看成一种特例）
-Windows下没有这一套东西（虽然有Windows版的pkg-config 但是因为Windows没有类似Linux的统一的目录组织 所以维护pkg-config的库十分麻烦）
-这就导致mingw在Windows下非常难用了
