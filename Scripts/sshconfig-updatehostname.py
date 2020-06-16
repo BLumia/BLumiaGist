@@ -21,7 +21,7 @@ def main():
 
 	if not os.path.isfile(os.path.expanduser("~/.ssh/config")):
 		print("~/.ssh/config 不存在，将创建。")
-	f = open("/root/.ssh/config", 'r')
+	f = open(os.path.expanduser("~/.ssh/config"), 'r')
 	lines = f.readlines()
 	f.close()
 
@@ -35,7 +35,7 @@ def main():
 	if not matched:
 		lines = lines + gen_config_strarr(one_srv)
 
-	with open("/root/.ssh/config", 'w+') as handle:
+	with open(os.path.expanduser("~/.ssh/config"), 'w+') as handle:
 		handle.writelines(lines)
 
 	if matched:
