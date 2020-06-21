@@ -2,6 +2,9 @@
 
  - 相机飞行模式
 Shift+` 即可
+ - 移动变焦（Dolly Zoom）
+https://docs.blender.org/manual/en/dev/editors/3dview/navigate/navigation.html#dolly-zoom
+Ctrl+Shift+中键上下拖动。与滚轮的放大缩小不是一回事。另，若为解决普通滚轮的放大缩小局限性问题，也可以去设置里开启自动深度（Auto Depth）选项。另见：https://blender.stackexchange.com/questions/644/why-does-the-zoom-sometimes-stop-at-a-point
  - 移动视口以显示当前激活的物体（zoom to selected）
 小键盘点（numpad .）
  - 移动视口中心到当前点选的位置
