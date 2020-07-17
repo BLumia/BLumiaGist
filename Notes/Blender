@@ -38,5 +38,6 @@ Ctrl+A 打开应用菜单。对物体操作进行的各种变换（位移，缩�
 Mesh: Auto Mirror 提供了设置镜像操作的快捷入口（在n panel）
 Object: Bool Tools 提供了快速布尔操作的方式（在n panel）
 [非内附] Screencast Key 或 Shortcut VUr 提供了按键操作的屏显。前者曾为旧版 blender 内附的插件
+SimpleLattice 简易晶格插件，选中物体后右键即可按对应物体的轮廓快速创建晶格并自动附加修改器： https://github.com/BenjaminSauder/SimpleLattice
  - 实用的设置
 编辑模式下，右上角可以启用自动合并顶点的功能
