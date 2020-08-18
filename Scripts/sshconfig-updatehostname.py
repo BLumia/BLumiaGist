@@ -28,7 +28,7 @@ def main():
 	one_srv = (sys.argv[1], sys.argv[2])
 	matched = False
 	for i, line in enumerate(lines):
-		if one_srv[0] in line and "HostName" in lines[i + 1]:
+		if re.search(r'\s' + one_srv[0] + r'$', line.strip()) and "HostName" in lines[i + 1]:
 			matched = True
 			lines[i + 1] = "    HostName        {}\n".format(one_srv[1])
 			break
