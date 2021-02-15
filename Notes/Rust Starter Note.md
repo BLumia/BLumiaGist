@@ -6,7 +6,19 @@ Rust 官方提供一本叫 [TRPL(The Rust Programming Language)](https://doc.rus
 
 ### 安装 Rust
 
-在 Linux 上安装不应该成为什么问题，Windows 的话按 TRPL 的说法，通过 `rustup` 装好 Rust 工具链之后，作为依赖还需要装 [Visual Studio 2017 生成工具](https://www.visualstudio.com/zh-hans/downloads/) ，不过本来有 VS 在电脑上，想防止装上多余的东西的话，只需要确认 **VC++ 工具集**、**Windows 通用 CRT SDK** 和 **Windows SDK** 装好了就可以了（说法来自[这里](https://github.com/rust-lang-nursery/rustup.rs/issues/1003#issuecomment-289809890)）。
+~~在 Linux 上安装不应该成为什么问题，Windows 的话按 TRPL 的说法，通过 `rustup` 装好 Rust 工具链之后，作为依赖还需要装 [Visual Studio 2017 生成工具](https://www.visualstudio.com/zh-hans/downloads/) ，不过本来有 VS 在电脑上，想防止装上多余的东西的话，只需要确认 **VC++ 工具集**、**Windows 通用 CRT SDK** 和 **Windows SDK** 装好了就可以了（说法来自[这里](https://github.com/rust-lang-nursery/rustup.rs/issues/1003#issuecomment-289809890)）。~~
+
+对于 Windows 环境，Rust 默认提供 msvc 工具链（`x86_64-pc-windows-msvc`），若使用 msvc 工具链则需要安装巨硬的 VS 生成工具，当然也可以选择使用 GNU 工具链，（`x86_64-pc-windows-gnu`），使用 rustup 安装时修改默认值后进行安装即可。另除了 rustup 外其实也提供了[离线安装包](https://forge.rust-lang.org/infra/other-installation-methods.html)，但没试过，鉴于用到第三方库会比较常见，离线安装的意义可能也不是特别大吧。
+
+另注意，在意工具链肯定是因为要用到第三方库作为依赖，GNU 工具链则建议搭配 MSYS2 食用，因为尽管 rustup 会提供一些工具链应用，有的依赖在构建过程还是会需要一些 rustup 并未随安装提供的其它 GNU 工具链程序，比如构建 freetype-sys 会需要 pkg-config。简单的做法就是准备 MSYS2 后，编辑 `msys2_shell.cmd` 以配置 MSYS2 继承宿主的 PATH 内容：
+
+``` cmd
+rem To export full current PATH from environment into MSYS2 use '-use-full-path' parameter
+rem or uncomment next line
+set MSYS2_PATH_TYPE=inherit
+```
+
+完毕之后，在 MSYS2 环境里使用 rust 工具链即可。
 
 ### 构建和项目管理工具
 
@@ -40,6 +52,23 @@ rand = "0.3.14"
 这种版本记法称为语义化版本，`0.3.14` 事实上是 `^0.3.14` 的简写，它表示 “任何与 0.3.14 版本公有 API 相兼容的版本”。在更新该文件后执行 `cargo build` 时即会按照新的依赖同步获取所需的 crate 。另外在首次运行 `cargo build` 时会创建一个叫 `Cargo.lock` 的文件（该文件仅应当被 cargo 管理，我们不应当编辑它）来记录我们实际使用的版本（由 Cargo.toml 内的依赖版本记录计算得到），当我们使用 `cargo update` 时会显示的升级我们实际使用的 crate 并（在成功的情况下）帮我们更新 `Cargo.lock` 的内容（注意：这不会更新 `Cargo.toml` 的内容）。
 
 换句话说， `Cargo.toml` 是理论支持的版本，而 `Cargo.lock` 是记录了本地开发所使用的版本。不过目前我有个问题，明显 `.lock` 中记录的内容很可能和所用的操作系统相关（比如该例子中 `rand` 在 Windows 下会依赖 `winapi` 这个 crate ）。如果对于跨平台的应用，该文件是否应当被 git 跟踪？
+
+若需给 cargo 指定镜像，可在 [`.cargo/config.toml`](https://doc.rust-lang.org/cargo/reference/config.html) 文件中指定镜像，如：
+
+``` toml
+[source.crates-io]
+registry = "https://github.com/rust-lang/crates.io-index"
+replace-with = 'tuna'
+
+[source.tuna]
+registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
+
+[source.ustc]
+registry = "git://mirrors.ustc.edu.cn/crates.io-index"
+
+[source.sjtu]
+registry = "https://mirrors.sjtug.sjtu.edu.cn/git/crates.io-index"
+```
 
 ### 语法速览 - 猜猜看程序
 
